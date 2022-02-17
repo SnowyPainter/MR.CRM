@@ -40,8 +40,7 @@ flex-basis:최소단위
 ## 로그인
 로그인과 로그아웃 페이지는 login 페이지에서 이루어진다. 모든 페이지(login제외)는 body onload 에 따로 onload.js 를 불러와서 그것에 로그인 여부를 확인하는 함수를 지정해야 한다. 만약 로그인되어지지 않았다면 login 페이지로 이동하는 ``` document.location.href ``` 스크립트를 짠다.  
 ### JWT
-팀 접근 권한, 아이디, 소속팀이 있다. 팀 접근 권한의 종류는 쉼표로 구분되어진다. 띄어쓰고 열람 및 수정 여부를 지정해야 한다.   
-예 : 1 R,5 RW,11 R
+팀 접근 권한, 아이디, 소속팀이 있다. 팀 접근 권한의 종류는 쉼표로 구분되어진다. 띄어쓰고 열람 및 수정 여부를 지정해야 한다.
 
 ## 보고서 양식 생성
 보고서 양식을 생성하기 위해서는 필드를 추가하고 그것의 입력 타입을 정하는 것 이다. 이렇게 만들어진 것은 db에 form inner html이 저장된다. 또, 필드는 따로 저장된다.
@@ -53,7 +52,11 @@ flex-basis:최소단위
 # 데이터베이스 디자인
 sqlite3 를 사용한다.
 ## 유저
-id INTEGER PRIMARY KEY AUTOINCREMENT, manager INTEGER, email TEXT, password TEXT, pm TEXT
+id INTEGER PRIMARY KEY AUTOINCREMENT, manager INTEGER, email TEXT, password TEXT, permission TEXT, team TEXT
+permission 는 1 R,5 RW 꼴의 문자열, 각각 1팀 읽기 가능, 5팀 읽기쓰기 가능이다.  
+team는 소속팀이고, team table의 id 이다.
+## 팀
+id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT
 ## 보고서 양식
 id INTEGER PRIMARY KEY AUTOINCREMENT, html TEXT
 보고서 양식 페이지의 미리보기 컨테이너의 form inner html을 가진다.
