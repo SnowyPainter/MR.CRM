@@ -1,3 +1,5 @@
+mrcrm/config/*
+
 # Logs
 logs
 *.log

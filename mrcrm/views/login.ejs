@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>login page</h1>
+    <% if(!login) { %>
+        <h1>login please</h1>
+        <input type="text" name="email" id="email" /></br>
+        <input type="password" name="password" id="password"></br>
+        <button onclick="login()">login</button>
+    <% } else { %>
+        <h1>Welcome <%= data.id %></h1>
+        <button onclick="logout()">logout</button>
+    <% } %>
+    <script src="/javascripts/base.js"></script>
+    <script>
+        function login() {
+            postAjax("/user/login", {
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            }, (res)=>{
+                window.location.href = "/"
+            });
+        }
+        function logout() {
+            postAjax("/user/logout", {}, (res) => {
+                console.log(res.success)
+            });
+            window.location.reload();
+        }
+    </script>    
+</body>
+
+</html>

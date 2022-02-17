@@ -53,7 +53,7 @@ flex-basis:최소단위
 # 데이터베이스 디자인
 sqlite3 를 사용한다.
 ## 유저
-id INTEGER PRIMARY KEY AUTOINCREMENT, manager INTEGER, email TEXT, password TEXT
+id INTEGER PRIMARY KEY AUTOINCREMENT, manager INTEGER, email TEXT, password TEXT, pm TEXT
 ## 보고서 양식
 id INTEGER PRIMARY KEY AUTOINCREMENT, html TEXT
 보고서 양식 페이지의 미리보기 컨테이너의 form inner html을 가진다.
