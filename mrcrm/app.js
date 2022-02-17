@@ -7,7 +7,8 @@ let logger = require('morgan');
 
 let indexRouter = require('./routes/index');
 let loginRouter = require('./routes/login');
-var db = require('./database/db') 
+let teamsRouter = require('./routes/teams');
+let db = require('./database/db') 
 
 db.initialize();
 
@@ -21,9 +22,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+  res.db = db;
+  next();
+})
 
 app.use('/', indexRouter);
 app.use('/user', loginRouter);
+app.use('/teams', teamsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

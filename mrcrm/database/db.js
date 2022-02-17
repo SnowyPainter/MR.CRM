@@ -20,12 +20,26 @@ function insertString(table, insertOrder, values) {
     let val = values.map((v)=>"'"+v+"'").join(',');
     return "INSERT INTO "+table+" ("+order+")"+" VALUES("+val+");";
 }
+function selectString(table, fieldArray, condition) {
+    const f = fieldArray.length == 0 ? "*" : fieldArray.map((f)=>f).join(',');
+    return "SELECT "+f+" FROM "+table+" "+condition;
+}
 function createTableString(name, field) {
     let t = []
     for(const [key, detail] of Object.entries(field)) {
         t.push(key+" "+detail)
     }
     return "CREATE TABLE IF NOT EXISTS "+name+"("+t.map((f)=>f).join(', ')+");"
+}
+
+module.exports.insert = (table, orderArray, valueArray) => {
+    db.run(insertString(table, orderArray,
+            valueArray));
+}
+module.exports.select = (table, fieldArray, condition, handler) => {
+    db.all(selectString(table, fieldArray, condition), [], (err, rows) => {
+        handler(err, rows)
+    })
 }
 
 module.exports.initialize = () => {
@@ -36,13 +50,22 @@ module.exports.initialize = () => {
         console.log("Well connected to sqlite");
     });
     db.serialize(() => {
+        db.run(createTableString("Team", {
+            "id" : "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "name" : "TEXT"
+        }))
         db.run(createTableString("User", {
             "id" : "INTEGER PRIMARY KEY AUTOINCREMENT", 
             "manager" : "INTEGER", 
             "email" : "TEXT",
             "password" : "TEXT",
-            "permission" : "TEXT"
+            "permission" : "TEXT",
+            "team" : "TEXT"
         }));
+        /* db.run(insertString("Team", ["name"],
+            ["t"])) */
+        /*db.run(insertString("User", ["manager", "email", "password", "permission", "team"],
+            ["0", "aa", "1234", "1 R, 2 RW", "2"])) */
         db.run(createTableString("ReportForm", {
             "id" : "INTEGER PRIMARY KEY AUTOINCREMENT",
             "html" : "TEXT"
@@ -58,14 +81,19 @@ module.exports.initialize = () => {
             "data" : "TEXT",
             "date" : "TEXT"
         }))
-        
-        /* db.run(insertString("User", ["manager", "email", "password"],
-            ["0", "a@a.com", "1234"]));
-        db.all("SELECT * FROM User", [], (err, rows) => {
-            if(err) { throw err; }
-            rows.forEach(row => {
-                console.log(row)
-            });
-        }) */
+    })
+}
+
+module.exports.getTeamUrlPairs = (handler) => {
+    this.select("Team", [], "", (err, rows) => {
+        let teams = []
+        if(err) {
+            handler(teams)
+            return;
+        }
+        rows.forEach(r => {
+          teams.push([r.name, "/teams/"+r.id])
+        });
+        handler(teams)
     })
 }

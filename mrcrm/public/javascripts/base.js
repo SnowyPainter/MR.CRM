@@ -9,3 +9,9 @@ function postAjax(url, data, onload) {
     ajax.onload = () => {onload(ajax.responseText)};
     ajax.send(JSON.stringify(data))
 }
+function getAjax(url, onload) {
+    const ajax = new XMLHttpRequest();
+    ajax.open("GET", url, false);
+    ajax.onload = () => {onload(ajax.responseText)}
+    ajax.send();
+}

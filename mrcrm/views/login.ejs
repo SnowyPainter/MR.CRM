@@ -2,23 +2,45 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <%- include('./header.ejs') %>
+    <title>User</title>
 </head>
-
 <body>
-    <h1>login page</h1>
-    <% if(!login) { %>
-        <h1>login please</h1>
-        <input type="text" name="email" id="email" /></br>
-        <input type="password" name="password" id="password"></br>
-        <button onclick="login()">login</button>
-    <% } else { %>
-        <h1>Welcome <%= data.id %></h1>
-        <button onclick="logout()">logout</button>
-    <% } %>
+    <%- include('./navbar.ejs') %> 
+    <div id="main">
+        <div class="container">
+            <h1>Welcome!</h1>
+            <% if(!login) { %>
+                <input type="text" name="email" id="email" /></br>
+                <input type="password" name="password" id="password"></br>
+                <button onclick="login()">login</button>
+            <% } else { %>
+                <table border style="border: 1px solid black;">
+                    <tbody>
+                        <tr>
+                            <td>Is Manager</td>
+                            <td><%= data.manager%></td>
+                        </tr>
+                        <tr>
+                            <td>Id</td>
+                            <td><%= data.id%></td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td><%= data.email%></td>
+                        </tr>
+                        <tr>
+                            <td>Permission</td>
+                            <% for(let i = 0;i < data.permission.length;i++) { %>
+                                <td><%= data.permission[i][0]%> : <%= data.permission[i][1]%></td>
+                            <% } %>
+                        </tr>
+                    </tbody>
+                </table>
+                <button onclick="logout()">logout</button>
+            <% } %>
+        </div>
+    </div>
     <script src="/javascripts/base.js"></script>
     <script>
         function login() {

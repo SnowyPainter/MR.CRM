@@ -1,0 +1,33 @@
+<link rel='stylesheet' href='/stylesheets/navbar.css' />
+<ul id="navbar">
+    <li><a href="/">Home</a></li>
+    <li><a href="/user/">User</a></li>
+    <% if(data != undefined && data.manager) { %>
+        <li><a href="/create">create new form</a></li>
+    <% } %>
+    <div id="menu">
+        
+    </div>
+    <p id="footer">
+        Made by ™Snowypainter</br>
+        COMPANY NAME
+    </p>
+    <script src="/javascripts/base.js"></script>
+    <script>
+        window.onload = () => {
+            let menu = document.getElementById("menu")
+            getAjax("/teams/get/list", (response) => {
+                JSON.parse(response).teams.forEach(team => {
+                    const name = team[0];
+                    const href = team[1];
+                    let li = document.createElement("li");
+                    let a = document.createElement("a");
+                    a.href = href;
+                    a.innerText = name;
+                    li.appendChild(a)
+                    menu.appendChild(li)
+                });
+            })
+        }
+    </script>
+</ul>
