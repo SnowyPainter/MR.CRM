@@ -8,9 +8,13 @@ router.get('/', auth.authIfNotRedirectLogin, (req, res) => {
   });
 })
 router.get('/create', auth.authIfNotRedirectLogin, (req, res) => {
-  res.render('createForm', {
-    data: res.data
-  });
+  if(res.data.manager == 1) {
+    res.render('createForm', {
+      data: res.data
+    });
+  } else {
+    res.redirect('/')
+  }
 })
 
 module.exports = router;

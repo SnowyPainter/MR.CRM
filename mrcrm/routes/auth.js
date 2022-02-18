@@ -29,6 +29,6 @@ module.exports.checkLogin = (req, res, next) => {
     })
     next()
   } catch (e) {
-    console.log(e)
+    console.log("auth.js 32 "+e)
   }
 }

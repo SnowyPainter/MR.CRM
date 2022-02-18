@@ -7,6 +7,7 @@ let logger = require('morgan');
 
 let indexRouter = require('./routes/index');
 let loginRouter = require('./routes/login');
+let reportRouter = require('./routes/report')
 let teamsRouter = require('./routes/teams');
 let db = require('./database/db') 
 
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/user', loginRouter);
+app.use('/report', reportRouter)
 app.use('/teams', teamsRouter);
 
 // catch 404 and forward to error handler

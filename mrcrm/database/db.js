@@ -15,6 +15,13 @@ function getNowDate() {
 function getDateFromString(str) {
     return new Date(str)
 }
+function updateString(table, sets, condition) {
+    let set = []
+    for(const [column, value] of Object.entries(sets)) {
+        set.push(column+"="+"'"+value+"'")
+    }
+    return "UPDATE "+table+" "+set.join(', ')+" "+condition
+}
 function insertString(table, insertOrder, values) {
     let order = insertOrder.map((f) => f).join(',');
     let val = values.map((v)=>"'"+v+"'").join(',');
@@ -31,17 +38,47 @@ function createTableString(name, field) {
     }
     return "CREATE TABLE IF NOT EXISTS "+name+"("+t.map((f)=>f).join(', ')+");"
 }
-
-module.exports.insert = (table, orderArray, valueArray) => {
+function _insert(table, orderArray, valueArray) {
     db.run(insertString(table, orderArray,
             valueArray));
+}
+
+module.exports.insert = (table, keyvalueArray) => {
+    order = []
+    vals = []
+    for(const [key, value] of Object.entries(keyvalueArray)) {
+        order.push(key)
+        vals.push(value)
+    }
+    _insert(table, order, vals)
+}
+module.exports.update = (table, sets, condition) => {
+    db.run(updateString(table, sets, condition))
+}
+module.exports.updateOrInsert = (table, values) => {
+    order = []
+    vals = []
+    for(const [key, value] of Object.entries(values)) {
+        order.push(key)
+        vals.push(value)
+    }
+    if(order.includes("id")) {
+        const id = vals[order.indexOf("id")]
+        this.select(table, ["id"], "WHERE id="+id, (err, rows) => {
+            if(err || rows == undefined || rows.length == 0) {
+                _insert(table, order, vals)
+            } else {
+                this.update(table, values, "WHERE id="+id)
+            }
+        })
+    }
+    _insert(table, order, vals)
 }
 module.exports.select = (table, fieldArray, condition, handler) => {
     db.all(selectString(table, fieldArray, condition), [], (err, rows) => {
         handler(err, rows)
     })
 }
-
 module.exports.initialize = () => {
     db = new sqlite3.Database(config.dbPath, (err) => {
         if (err) {
@@ -64,8 +101,10 @@ module.exports.initialize = () => {
         }));
         /* db.run(insertString("Team", ["name"],
             ["t"])) */
-        /*db.run(insertString("User", ["manager", "email", "password", "permission", "team"],
-            ["0", "aa", "1234", "1 R, 2 RW", "2"])) */
+        /* db.run(insertString("ReportFormField", ["field"],
+            ["aaaaa"]))
+            db.run(insertString("ReportFormField", ["field"],
+            ["bbb"])) */
         db.run(createTableString("ReportForm", {
             "id" : "INTEGER PRIMARY KEY AUTOINCREMENT",
             "html" : "TEXT"

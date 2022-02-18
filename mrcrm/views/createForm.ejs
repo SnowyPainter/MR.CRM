@@ -2,15 +2,48 @@
 <html>
   <head>
     <%- include('./header.ejs') %>
-    <title>Index</title>
+    <title>Create new form</title>
   </head>
   <body>
     <%- include('./navbar.ejs') %> 
     <div id="main">
       <div class="container">
-          <h1>Create report form</h1>
+          <h1 class="title">Preview</h1>
+      </div>
+      <div class="container">
+        <h1 class="title">Construct form</h1>
+      </div>
+      <div class="container" id="addfield">
+        <h1 class="title">Add field</h1>
       </div>
     </div>
     <script src="/javascripts/base.js"></script>
+    <script>
+      const createField = (id, value) => {
+        let input = document.createElement("input")
+        input.value =  value; input.id = id;
+        return input;
+      }
+      const getListOfFields = () => new Promise((rs, rj) => {
+          getAjax("/report/get/fields", (res) => {rs(res)})
+        })
+      let listOfFields = []
+
+      function refreshAddFieldContainer() {
+        let c = document.getElementById("addfield")
+        getListOfFields().then((list) => {
+          listOfFields = JSON.parse(list).fields;
+          listOfFields.forEach((field) => {
+            c.appendChild(createField(field.id, field.field))
+          });
+        })
+      }
+
+      const prev = window.onload;
+      window.onload = () => {
+        if(prev) prev();
+        refreshAddFieldContainer();
+      } 
+    </script>
   </body>
 </html>
