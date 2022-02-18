@@ -38,6 +38,10 @@ function createTableString(name, field) {
     }
     return "CREATE TABLE IF NOT EXISTS " + name + "(" + t.map((f) => f).join(', ') + ");"
 }
+function deleteRowString(table, condition) {
+    return "DELETE FROM "+table+" "+condition;
+}
+
 function _insert(table, orderArray, valueArray) {
     db.run(insertString(table, orderArray,
         valueArray));
@@ -75,6 +79,11 @@ module.exports.updateOrInsert = (table, values, condition) => {
         }
     })
 }
+module.exports.delete = (table, condition) => {
+    if(condition == undefined || condition == "") return;
+    db.run(deleteRowString(table, condition))
+}
+module.exports.serialize = (f) => {f()}
 module.exports.initialize = () => {
     db = new sqlite3.Database(config.dbPath, (err) => {
         if (err) {

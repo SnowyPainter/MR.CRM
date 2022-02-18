@@ -18,19 +18,45 @@
         <div id="fields">
 
         </div>
-        <input type="text"><button onclick="addField()">Add Field</button>
+        <input id="newField" type="text"><button onclick="addField(event)">Add Field</button>
       </div>
     </div>
     <script src="/javascripts/base.js"></script>
     <script>
+      function deleteField(e) {
+        const sender = e.srcElement || e.target;
+        const id = sender.parentNode.id;
+        getAjax("/report/delete/fields/"+id, (r)=>{
+          sender.parentNode.parentNode.removeChild(sender.parentNode)
+        });
+      }
+      function updateField(e) {
+        const sender = e.srcElement || e.target;
+        const id = sender.parentNode.id;
+        const text = sender.parentNode.getElementsByTagName("input")[0]
+        getAjax("/report/update/fields/"+id+"?field="+text.value, (r)=>{});
+      }
+      function addField(event) {
+        let input = document.getElementById("newField");
+        const text = input.value;
+        getAjax("/report/add/fields?field="+text, (r)=>{
+          const json = JSON.parse(r);
+          document.getElementById("fields").appendChild(createField(json.id, text));
+          input.value = "";
+        })
+      }
+
       const createField = (id, value) => {
         let field = document.createElement("div")
         field.classList.add("field");
+        field.id = id;
         let input = document.createElement("input")
-        input.value =  value; input.id = id;
+        input.value = value;
         let editBtn = document.createElement("button")
         editBtn.innerText = "Edit";
+        editBtn.addEventListener("click", updateField);
         let deleteBtn = document.createElement("button")
+        deleteBtn.addEventListener("click", deleteField);
         deleteBtn.innerText = "X";
         field.appendChild(input);
         field.appendChild(editBtn);

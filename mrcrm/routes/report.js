@@ -23,15 +23,37 @@ router.get('/get/fields', (req, res) => {
     })
 });
 
-router.get('/set/fields/:text', (req, res) => {
-    const fieldText = req.params.text;
-    //res.db
+router.get('/add/fields', (req, res) => {
+    const fieldText = req.query.field;
+    res.db.serialize(() => {
+        res.db.insert("ReportFormField", {
+            "field":fieldText
+        })
+        res.db.select("ReportFormField", ["id"], "ORDER BY id DESC LIMIT 1", (err, rows) => {
+            if(!err) {
+                res.send({
+                    id: rows[0].id
+                })
+            } else {
+                res.send({
+                    err:err
+                })
+            }
+        })
+    })
 })
 router.get('/delete/fields/:id', (req, res) => {
     const id = req.params.id;
+    res.db.delete("ReportFormField", "WHERE id="+id);
+    res.send({})
 })
 router.get('/update/fields/:id', (req, res) => {
     const id = req.params.id;
+    const fieldText = req.query.field;
+    res.db.update("ReportFormField", {
+        "field": fieldText
+    }, "WHERE id="+id)
+    res.send({})
 })
 
 module.exports = router;
