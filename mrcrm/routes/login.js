@@ -22,7 +22,7 @@ function parsePermission(permission) {
 
 router.post('/login', (req, res) => {
   res.db.select("User", [], "WHERE email='"+req.body.email+"' AND "+"password='"+req.body.password+"'", (err, rows) => {
-    if(!err) {
+    if(!err && rows.length > 0) {
       const row = rows[0]
       const user = {
         id: row.id,
@@ -34,7 +34,6 @@ router.post('/login', (req, res) => {
       res.cookie("auth-token", token); 
       res.redirect("/");
     } else {
-      console.log(err)
       res.redirect("/user")
     }
   })

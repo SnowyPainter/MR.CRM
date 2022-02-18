@@ -15,14 +15,27 @@
       </div>
       <div class="container" id="addfield">
         <h1 class="title">Add field</h1>
+        <div id="fields">
+
+        </div>
+        <input type="text"><button onclick="addField()">Add Field</button>
       </div>
     </div>
     <script src="/javascripts/base.js"></script>
     <script>
       const createField = (id, value) => {
+        let field = document.createElement("div")
+        field.classList.add("field");
         let input = document.createElement("input")
         input.value =  value; input.id = id;
-        return input;
+        let editBtn = document.createElement("button")
+        editBtn.innerText = "Edit";
+        let deleteBtn = document.createElement("button")
+        deleteBtn.innerText = "X";
+        field.appendChild(input);
+        field.appendChild(editBtn);
+        field.appendChild(deleteBtn);
+        return field;
       }
       const getListOfFields = () => new Promise((rs, rj) => {
           getAjax("/report/get/fields", (res) => {rs(res)})
@@ -30,7 +43,7 @@
       let listOfFields = []
 
       function refreshAddFieldContainer() {
-        let c = document.getElementById("addfield")
+        let c = document.getElementById("fields")
         getListOfFields().then((list) => {
           listOfFields = JSON.parse(list).fields;
           listOfFields.forEach((field) => {
