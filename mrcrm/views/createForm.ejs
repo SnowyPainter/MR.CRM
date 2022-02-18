@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <%- include('./header.ejs') %>
+
+<head>
+  <%- include('./header.ejs') %>
     <title>Create new form</title>
-  </head>
-  <body>
-    <%- include('./navbar.ejs') %> 
+</head>
+
+<body>
+  <%- include('./navbar.ejs') %>
     <div id="main">
       <div class="container">
-          <h1 class="title">Preview</h1>
+        <h1 class="title">Preview</h1>
       </div>
       <div class="container">
         <h1 class="title">Construct form</h1>
@@ -26,22 +28,24 @@
       function deleteField(e) {
         const sender = e.srcElement || e.target;
         const id = sender.parentNode.id;
-        getAjax("/report/delete/fields/"+id, (r)=>{
-          sender.parentNode.parentNode.removeChild(sender.parentNode)
+        getAjax("/report/delete/fields/" + id, (r) => {
+          //sender.parentNode.parentNode.removeChild(sender.parentNode)
+          refreshAddFieldContainer()
         });
       }
       function updateField(e) {
         const sender = e.srcElement || e.target;
         const id = sender.parentNode.id;
         const text = sender.parentNode.getElementsByTagName("input")[0]
-        getAjax("/report/update/fields/"+id+"?field="+text.value, (r)=>{});
+        getAjax("/report/update/fields/" + id + "?field=" + text.value, (r) => {refreshAddFieldContainer() });
       }
       function addField(event) {
         let input = document.getElementById("newField");
         const text = input.value;
-        getAjax("/report/add/fields?field="+text, (r)=>{
-          const json = JSON.parse(r);
-          document.getElementById("fields").appendChild(createField(json.id, text));
+        getAjax("/report/add/fields?field=" + text, (r) => {
+          /*const json = JSON.parse(r);
+          document.getElementById("fields").appendChild(createField(json.id, text)); */
+          refreshAddFieldContainer()
           input.value = "";
         })
       }
@@ -64,12 +68,16 @@
         return field;
       }
       const getListOfFields = () => new Promise((rs, rj) => {
-          getAjax("/report/get/fields", (res) => {rs(res)})
-        })
+        getAjax("/report/get/fields", (res) => { rs(res) })
+      })
       let listOfFields = []
 
       function refreshAddFieldContainer() {
         let c = document.getElementById("fields")
+        while (c.firstChild) {
+          c.removeChild(c.firstChild);
+        }
+
         getListOfFields().then((list) => {
           listOfFields = JSON.parse(list).fields;
           listOfFields.forEach((field) => {
@@ -80,9 +88,10 @@
 
       const prev = window.onload;
       window.onload = () => {
-        if(prev) prev();
+        if (prev) prev();
         refreshAddFieldContainer();
       } 
     </script>
-  </body>
+</body>
+
 </html>
