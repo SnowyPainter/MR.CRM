@@ -1,5 +1,17 @@
-function updateQuest(e) { }
-function deleteQuest(e) { }
+function updateQuest(e) {
+    const sender = e.srcElement || e.target;
+    const id = sender.parentNode.id;
+    const fieldId = sender.parentNode.getElementsByTagName("select")[0].value
+    const type = sender.parentNode.getElementsByTagName("select")[1].value
+    getAjax("/report/update/quests/" + id + "?fieldId=" + fieldId+"&type="+type, (r) => { refreshConstructContainer() });
+ }
+function deleteQuest(e) { 
+    const sender = e.srcElement || e.target;
+    const id = sender.parentNode.id;
+    getAjax("/report/delete/quests/" + id, (r) => {
+        refreshConstructContainer()
+    });
+}
 
 function deleteField(e) {
     const sender = e.srcElement || e.target;
@@ -103,8 +115,12 @@ function refreshConstructContainer() {
     getListOfQuests().then((list) => {
         listOfQuests = JSON.parse(list).quests;
         listOfQuests.forEach((q) => {
-            getAjax("/report/get/field/" + q.fieldId, (text) => {
-                c.appendChild(createQuest(q.id, text, q.submitType))
+            getAjax("/report/get/field/" + q.fieldId, (res) => {
+                let text = JSON.parse(res).rows[0]
+                if(text != undefined) {
+                    text = text.field;
+                    c.appendChild(createQuest(q.id, text, q.submitType))
+                }
             })
         });
     })

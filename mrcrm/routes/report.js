@@ -33,7 +33,7 @@ router.get('/get/field/:id', (req, res) => {
     const id = req.params.id;
     res.db.select("ReportFormField", ["field"], "WHERE id=" + id, (err, rows) => {
         if (!err) {
-            res.send(rows[0].field)
+            res.send({rows:rows})
         } else {
             res.send({})
         }
@@ -68,6 +68,12 @@ router.get('/add/fields', (req, res) => {
         })
     })
 })
+
+router.get('/delete/quests/:id', (req, res) => {
+    const id = req.params.id;
+    res.db.delete("ReportFormQuest", "WHERE id=" + id);
+    res.send({})
+})
 router.get('/delete/fields/:id', (req, res) => {
     const id = req.params.id;
     res.db.delete("ReportFormField", "WHERE id=" + id);
@@ -78,6 +84,16 @@ router.get('/delete/fields/:id', (req, res) => {
             }
         });
     })
+    res.send({})
+})
+router.get('/update/quests/:id', (req, res) => {
+    const id = req.params.id;
+    const fieldId = req.query.fieldId;
+    const submitType = req.query.type;
+    res.db.update("ReportFormQuest", {
+        "fieldId": fieldId,
+        "submitType": submitType
+    }, "WHERE id=" + id)
     res.send({})
 })
 router.get('/update/fields/:id', (req, res) => {
