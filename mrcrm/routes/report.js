@@ -29,9 +29,19 @@ router.get('/get/fields', (req, res) => {
         res.json({ fields: rows });
     })
 });
+router.get('/get/quest/:id', (req,res) => {
+    const id = req.params.id;
+    res.db.select("ReportFormQuest", [], "WHERE id=" + id, (err, rows) => {
+        if (!err) {
+            res.send({rows:rows})
+        } else {
+            res.send({err:err})
+        }
+    })
+})
 router.get('/get/field/:id', (req, res) => {
     const id = req.params.id;
-    res.db.select("ReportFormField", ["field"], "WHERE id=" + id, (err, rows) => {
+    res.db.select("ReportFormField", [], "WHERE id=" + id, (err, rows) => {
         if (!err) {
             res.send({rows:rows})
         } else {
@@ -39,6 +49,14 @@ router.get('/get/field/:id', (req, res) => {
         }
     })
 });
+
+router.get('/add/form', (req, res) => {
+    const quests = req.query.quests;
+    res.db.insert("ReportForm", {
+        "quests" : quests
+    })
+    res.send(quests)
+})
 router.get('/add/quest', (req, res) => {
     const fieldId = req.query.fieldId;
     const type = req.query.type;

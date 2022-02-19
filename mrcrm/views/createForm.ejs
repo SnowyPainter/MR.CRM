@@ -11,6 +11,13 @@
     <div id="main">
       <div class="container">
         <h1 class="title">Preview</h1>
+        <div id="preview">
+
+        </div>
+        <select id="questSelect"></select>
+        <button onclick="addQuestToPreview()">Add</button>
+        <button onclick="createForm()">Create</button>
+        <button onclick="clearPreview()">Clear</button>
       </div>
       <div class="container" id="construct">
         <h1 class="title">Construct form</h1>
@@ -22,6 +29,7 @@
         </select>
         <select id="typeSelect">
           <option value="text">Text</option>
+          <option value="yorn">Yes or No</option>
           <option value="file">File</option>
         </select>
         <button onclick="addQuest(event)">Add Question</button>

@@ -12,7 +12,6 @@ function deleteQuest(e) {
         refreshConstructContainer()
     });
 }
-
 function deleteField(e) {
     const sender = e.srcElement || e.target;
     const id = sender.parentNode.id;
@@ -30,13 +29,10 @@ function updateField(e) {
 function addQuest(event) {
     let fieldId = document.getElementById("fieldSelect").value;
     let type = document.getElementById("typeSelect").value; 
-    console.log(type)
-    
+
     getAjax("/report/add/quest?fieldId="+fieldId+"&type="+type, (res) => {
       refreshConstructContainer();
     })
-    
-
 }
 function addField(event) {
     let input = document.getElementById("newField");
@@ -44,7 +40,7 @@ function addField(event) {
     getAjax("/report/add/fields?field=" + text, (r) => {
         /*const json = JSON.parse(r);
         document.getElementById("fields").appendChild(createField(json.id, text)); */
-        refreshAddFieldContainer()
+        refreshAddFieldContainer(false)
         input.value = "";
     })
 }
@@ -97,6 +93,50 @@ const createField = (id, value) => {
     field.appendChild(deleteBtn);
     return field;
 }
+const createPreviewElement = (questId, fieldText, submitType) => {
+    let table = document.createElement("table")
+    let tr = document.createElement("tr")
+    let questTd = document.createElement("td")
+    questTd.innerText = fieldText
+    let inputTd = document.createElement("td")
+    let deleteBtn = document.createElement("button")
+    deleteBtn.innerText = "X"
+    deleteBtn.classList.add("deleteBtn")
+    deleteBtn.addEventListener("click", (e) => {
+        const sender = e.target;
+        const p = sender.parentNode.parentNode
+        
+        addedQuests.splice(addedQuests.indexOf(questId), 1);
+        p.parentNode.removeChild(p);
+    })
+    let input;
+    if(submitType == "text" || submitType == "file") {
+        input = document.createElement("input")
+    }
+    if(submitType == "text") {
+        input.type = "text"
+    } else if (submitType == "file") {
+        input.type = "file"
+    } else if (submitType == "yorn") {
+        input = document.createElement("div")
+        let y = document.createElement("input")
+        let n = document.createElement("input")
+        y.name = questId;
+        n.name = questId;
+        y.type = "radio"
+        n.type = "radio"
+        input.appendChild(y)
+        input.appendChild(document.createTextNode("Yes"))
+        input.appendChild(n)
+        input.appendChild(document.createTextNode("No"))
+    }
+    inputTd.appendChild(input)
+    tr.appendChild(questTd)
+    tr.appendChild(inputTd)
+    tr.appendChild(deleteBtn)
+    table.appendChild(tr)
+    return table
+}
 const getListOfQuests = () => new Promise((rs, rj) => {
     getAjax("/report/get/quests", (res) => { rs(res) })
 })
@@ -106,26 +146,70 @@ const getListOfFields = () => new Promise((rs, rj) => {
 
 let listOfFields = []
 let listOfQuests = []
+let addedQuests = []
+
+function clearPreview() {
+    refreshPreviewContainer();
+}
+function createForm() {
+    if(addedQuests.length == 0) return;
+    const str = addedQuests.join(' ')
+    getAjax("/report/add/form?quests="+str, (res) => {
+        alert(res);
+    })
+}
+
+function addQuestToPreview() {
+    let preview = document.getElementById("preview")
+    let selected = document.getElementById("questSelect")
+    const id = selected.value;
+    if(id == "") return;
+    if(addedQuests.includes(id)) {
+        alert("Already added element.")
+        return;
+    }
+    const fieldText = selected.options[selected.selectedIndex].innerText;
+    getAjax("/report/get/quest/"+id, (res) => {
+        const json = JSON.parse(res).rows[0]
+        const type = json.submitType;
+        preview.appendChild(createPreviewElement(id, fieldText, type))
+        addedQuests.push(id)
+    })
+}
+
+function refreshPreviewContainer() {
+    let preview = document.getElementById("preview")
+    while (preview.firstChild) {
+        preview.removeChild(preview.firstChild);
+    }
+    addedQuests = []
+}
 
 function refreshConstructContainer() {
-    let c = document.getElementById("quests")
+    let c = document.getElementById("quests");
+    let qs = document.getElementById("questSelect");
     while (c.firstChild) {
         c.removeChild(c.firstChild);
     }
     getListOfQuests().then((list) => {
         listOfQuests = JSON.parse(list).quests;
+        let opts = ""
         listOfQuests.forEach((q) => {
             getAjax("/report/get/field/" + q.fieldId, (res) => {
                 let text = JSON.parse(res).rows[0]
                 if(text != undefined) {
                     text = text.field;
+                    opts += "<option value='"+q.id+"'>"+text+"</option>"
                     c.appendChild(createQuest(q.id, text, q.submitType))
                 }
+                qs.innerHTML = opts;
             })
         });
     })
+
+    refreshPreviewContainer();
 }
-function refreshAddFieldContainer() {
+function refreshAddFieldContainer(relay=true) {
     let c = document.getElementById("fields");
     let selection = document.getElementById("fieldSelect");
     while (c.firstChild) {
@@ -143,7 +227,7 @@ function refreshAddFieldContainer() {
         });
         selection.innerHTML = opts;
     })
-    refreshConstructContainer();
+    if(relay) refreshConstructContainer();
 }
 
 const prev = window.onload;

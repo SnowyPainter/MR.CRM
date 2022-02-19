@@ -15,14 +15,23 @@ function getNowDate() {
 function getDateFromString(str) {
     return new Date(str)
 }
+function safeChar(str) {
+    str = str.replaceAll("'", "");
+    str = str.replaceAll('"', "");
+    return str
+}
 function updateString(table, sets, condition) {
     let set = []
     for (const [column, value] of Object.entries(sets)) {
+        value = safeChar(value)
         set.push(column + "=" + "'" + value + "'")
     }
     return "UPDATE " + table + " SET " + set.join(', ') + " " + condition
 }
 function insertString(table, insertOrder, values) {
+    for(let i = 0;i < values.length;i++) {
+        values[i] = safeChar(values[i])
+    }
     let order = insertOrder.map((f) => f).join(',');
     let val = values.map((v) => "'" + v + "'").join(',');
     return "INSERT INTO " + table + " (" + order + ")" + " VALUES(" + val + ");";
@@ -43,8 +52,9 @@ function deleteRowString(table, condition) {
 }
 
 function _insert(table, orderArray, valueArray) {
-    db.run(insertString(table, orderArray,
-        valueArray));
+    const s = insertString(table, orderArray,
+        valueArray);
+    db.run(s);
 }
 
 module.exports.insert = (table, keyvalueArray) => {

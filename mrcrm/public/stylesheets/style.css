@@ -38,7 +38,7 @@ input:focus {
   padding: 10px;
   box-shadow: 0px 0px 5px rgba(48, 48, 48, 0.555);
 }
-.container #fields, #quests {
+.container #fields, #quests, #preview {
   overflow-y: scroll;
   height: 350px;
 }
@@ -47,4 +47,7 @@ input:focus {
 }
 .container #quests .quest button {
   margin-left: 5px;
+}
+.container #preview {
+  min-width: 350px;
 }
