@@ -22,11 +22,12 @@ function safeChar(str) {
 }
 function updateString(table, sets, condition) {
     let set = []
-    for (const [column, value] of Object.entries(sets)) {
+    for (let [column, value] of Object.entries(sets)) {
         value = safeChar(value)
         set.push(column + "=" + "'" + value + "'")
     }
-    return "UPDATE " + table + " SET " + set.join(', ') + " " + condition
+    const s = "UPDATE " + table + " SET " + set.join(', ') + " " + condition;
+    return s
 }
 function insertString(table, insertOrder, values) {
     for(let i = 0;i < values.length;i++) {
@@ -72,7 +73,8 @@ module.exports.select = (table, fieldArray, condition, handler) => {
     })
 }
 module.exports.update = (table, sets, condition) => {
-    db.run(updateString(table, sets, condition))
+    const s = updateString(table, sets, condition);
+    db.run(s)
 }
 module.exports.updateOrInsert = (table, values, condition) => {
     order = []

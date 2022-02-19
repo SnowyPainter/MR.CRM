@@ -2,11 +2,18 @@ var express = require('express');
 var config = require('../config/config')
 var router = express.Router();
 const jwt = require('jsonwebtoken');
-const auth = require('./auth')
+const auth = require('./auth');
+const { redirect } = require('express/lib/response');
 
 router.use('/', auth.authIfNotRedirectLogin);
 
-router.get('/:id', auth.authIfNotRedirectLogin, (req, res) => {
+router.get('/create', (req, res) => {
+    if(res.data.manager != 1) redirect('/')
+
+    //팀생성
+})
+
+router.get('/:id', (req, res) => {
     const id = req.params.id
     new Promise((rs, rj) => {
         res.data.permission.map((arr) => {

@@ -31,7 +31,7 @@ function addQuest(event) {
     let type = document.getElementById("typeSelect").value; 
 
     getAjax("/report/add/quest?fieldId="+fieldId+"&type="+type, (res) => {
-      refreshConstructContainer();
+      refreshConstructContainer(false);
     })
 }
 function addField(event) {
@@ -185,7 +185,7 @@ function refreshPreviewContainer() {
     addedQuests = []
 }
 
-function refreshConstructContainer() {
+function refreshConstructContainer(refreshPreview=true) {
     let c = document.getElementById("quests");
     let qs = document.getElementById("questSelect");
     while (c.firstChild) {
@@ -195,6 +195,7 @@ function refreshConstructContainer() {
         listOfQuests = JSON.parse(list).quests;
         let opts = ""
         listOfQuests.forEach((q) => {
+            if(q.fieldId == "") return;
             getAjax("/report/get/field/" + q.fieldId, (res) => {
                 let text = JSON.parse(res).rows[0]
                 if(text != undefined) {
@@ -206,8 +207,8 @@ function refreshConstructContainer() {
             })
         });
     })
-
-    refreshPreviewContainer();
+    if(refreshPreview)
+        refreshPreviewContainer();
 }
 function refreshAddFieldContainer(relay=true) {
     let c = document.getElementById("fields");
