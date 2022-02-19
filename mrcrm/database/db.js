@@ -104,13 +104,25 @@ module.exports.initialize = () => {
             "permission": "TEXT",
             "team": "TEXT"
         }));
+        /* this.insert("User", {
+            "manager":"1",
+            "email":"a",
+            "password":"1",
+            "permission": "1 R, 2 RW",
+            "team": "1"
+        }) */
         db.run(createTableString("ReportForm", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-            "html": "TEXT"
+            "quests": "TEXT"
         }))
         db.run(createTableString("ReportFormField", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
             "field": "TEXT"
+        }))
+        db.run(createTableString("ReportFormQuest", {
+            "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "fieldId": "TEXT",
+            "submitType": "TEXT"
         }))
         db.run(createTableString("Report", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
