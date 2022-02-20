@@ -59,11 +59,11 @@ team는 소속팀이고, team table의 id 이다.
 id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT
 ## 보고서 양식
 id INTEGER PRIMARY KEY AUTOINCREMENT, quests TEXT
-보고서 양식 생성 페이지에서 추가한 quest를 id로
+보고서 양식 생성 페이지에서 추가한 quest를 id로, 아래와 같다.
 ```
 1 2 3 4
 ```
-형식으로 가진다.
+보고서 양식을 제출할때는 quest Id에 맞는 해당 name을 가진 input 필드의 value를 questId:value 꼴로 저장한 것을 제출한다.
 ### 보고서 양식 필드
 보고서 양식은 필드와 입력값으로 구성되는데, 그 필드에 대한 정보를 db에 기록해둔다.  
 id INTEGER PRIMARY KEY AUTOINCREMENT, field TEXT  
@@ -73,7 +73,7 @@ id INTEGER PRIMARY KEY AUTOINCREMENT, fieldId TEXT, submitType TEXT
 필드와 제출 타입으로 이루어져 있다.
 ## 보고서 제출
 id INTEGER PRIMARY KEY AUTOINCREMENT, reporter INTEGER, reportform INTEGER, data TEXT, date TEXT 
-reportform에 맞는 올바른 data가 필요한데, 그것은 form 데이터에 기반, 파일의 경우는 서버에 저장된 파일경로로 한다.  
+reportform에 맞는 올바른 data가 필요한데, 생성되는 form의 input name의 name이 quest id 이므로 중복될 일 없으며 그것의 value가 데이터다.
 ```
 a=a&b=b&c=/file/a.pdf
 ```
