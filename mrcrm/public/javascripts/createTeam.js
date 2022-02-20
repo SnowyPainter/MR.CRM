@@ -11,9 +11,18 @@ function pushMember(id, name, permission) {
         id: id,
         permission: permission
     })
+    let currIndex = membersIntoTeam.length -1;
     let li = document.createElement("li")
+    let deleteBtn = document.createElement("button")
     li.innerText = name
-    document.getElementById("addedUserList").appendChild(li)
+    deleteBtn.innerText = "X"
+    deleteBtn.addEventListener("click", () => {
+        li.parentNode.removeChild(li)
+        membersIntoTeam.splice(currIndex, 1);
+    })
+    let l = document.getElementById("addedUserList");
+    l.appendChild(li)
+    li.appendChild(deleteBtn)
 }
 function pushMemberToArray() {
     const user = document.getElementById("userList");

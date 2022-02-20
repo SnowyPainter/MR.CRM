@@ -42,7 +42,6 @@ router.get('/create/team', (req, res) => {
             "name": teamName
         })
         res.db.select("Team", ["id"], "ORDER BY id DESC LIMIT 1", (err, rows) => {
-            console.log(rows)
             if (!err) res.json({ teamId: rows[0].id })
             else res.json({ err: err })
         })
