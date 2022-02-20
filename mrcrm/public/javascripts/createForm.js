@@ -97,10 +97,10 @@ const createPreviewElement = (questId, fieldText, submitType) => {
     return _createQuestHtml(questId, fieldText, submitType, true)
 }
 const getListOfQuests = () => new Promise((rs, rj) => {
-    getAjax("/report/get/quests", (res) => { rs(res) })
+    getAjax("/report/get/list/ReportFormQuest", (res) => { rs(JSON.parse(res)) })
 })
 const getListOfFields = () => new Promise((rs, rj) => {
-    getAjax("/report/get/fields", (res) => { rs(res) })
+    getAjax("/report/get/list/ReportFormField", (res) => { rs(JSON.parse(res)) })
 })
 
 let listOfFields = []
@@ -128,7 +128,7 @@ function addQuestToPreview() {
         return;
     }
     const fieldText = selected.options[selected.selectedIndex].innerText;
-    getAjax("/report/get/quest/"+id, (res) => {
+    getAjax("/report/get/ReportFormQuest/"+id, (res) => {
         const json = JSON.parse(res).rows[0]
         const type = json.submitType;
         preview.appendChild(createPreviewElement(id, fieldText, type))
@@ -151,11 +151,11 @@ function refreshConstructContainer(refreshPreview=true) {
         c.removeChild(c.firstChild);
     }
     getListOfQuests().then((list) => {
-        listOfQuests = JSON.parse(list).quests;
+        listOfQuests = list.data;
         let opts = ""
         listOfQuests.forEach((q) => {
             if(q.fieldId == "") return;
-            getAjax("/report/get/field/" + q.fieldId, (res) => {
+            getAjax("/report/get/ReportFormField/" + q.fieldId, (res) => {
                 let text = JSON.parse(res).rows[0]
                 if(text != undefined) {
                     text = text.field;
@@ -179,7 +179,7 @@ function refreshAddFieldContainer(relay=true) {
         selection.removeChild(selection.firstChild)
     }
     getListOfFields().then((list) => {
-        listOfFields = JSON.parse(list).fields;
+        listOfFields = list.data
         let opts = "";
         listOfFields.forEach((field) => {
             c.appendChild(createField(field.id, field.field))

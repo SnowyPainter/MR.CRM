@@ -13,43 +13,27 @@ router.get('/create', (req, res) => {
         data: res.data
     });
 })
-
-router.get('/get/quests', (req, res) => {
-    if (res.data.manager != 1) res.json({ quests: [] });
-    res.db.select("ReportFormQuest", [], "", (err, rows) => {
-        //send with id
-        res.json({ quests: rows });
+router.get('/get/list/:table', (req, res) => {
+    if (res.data.manager != 1) res.json({ data: [] });
+    res.db.select(req.params.table, [], "", (err, rows) => {
+        if(!err)
+            res.json({ data: rows });
+        else
+            res.json({ err:err})
     })
 })
-router.get('/get/fields', (req, res) => {
-    if (res.data.manager != 1) res.json({ fields: [] });
 
-    res.db.select("ReportFormField", [], "", (err, rows) => {
-        //send with id
-        res.json({ fields: rows });
-    })
-});
-router.get('/get/quest/:id', (req,res) => {
+router.get('/get/:table/:id', (req, res) => {
+    const table = req.params.table;
     const id = req.params.id;
-    res.db.select("ReportFormQuest", [], "WHERE id=" + id, (err, rows) => {
+    res.db.select(table, [], "WHERE id=" + id, (err, rows) => {
         if (!err) {
-            res.send({rows:rows})
+            res.json({rows:rows})
         } else {
-            res.send({err:err})
+            res.json({err:err})
         }
     })
 })
-router.get('/get/field/:id', (req, res) => {
-    const id = req.params.id;
-    res.db.select("ReportFormField", [], "WHERE id=" + id, (err, rows) => {
-        if (!err) {
-            res.send({rows:rows})
-        } else {
-            res.send({})
-        }
-    })
-});
-
 router.get('/add/form', (req, res) => {
     const quests = req.query.quests;
     res.db.insert("ReportForm", {

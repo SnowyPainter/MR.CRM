@@ -39,7 +39,8 @@ function insertString(table, insertOrder, values) {
 }
 function selectString(table, fieldArray, condition) {
     const f = fieldArray.length == 0 ? "*" : fieldArray.map((f) => f).join(',');
-    return "SELECT " + f + " FROM " + table + " " + condition;
+    const s = "SELECT " + f + " FROM " + table + " " + condition;
+    return s;
 }
 function createTableString(name, field) {
     let t = []
