@@ -8,4 +8,11 @@ router.get('/', auth.authIfNotRedirectLogin, (req, res) => {
   });
 })
 
+router.get('/get/list/users', auth.authIfNotRedirectLogin, (req, res) => {
+  res.db.select("User", ["id", "name"], "", (err, rows) => {
+    if(!err) res.json({users:rows})
+    else res.json({err:err})
+  })
+})
+
 module.exports = router;

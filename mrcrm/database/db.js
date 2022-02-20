@@ -118,14 +118,6 @@ module.exports.initialize = () => {
             "permission": "TEXT",
             "team": "TEXT"
         }));
-         this.insert("User", {
-            "manager":"1",
-            "email":"a",
-            "name":"a",
-            "password":"1",
-            "permission": "1 R, 2 RW",
-            "team": "1"
-        })
         db.run(createTableString("ReportForm", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
             "quests": "TEXT",

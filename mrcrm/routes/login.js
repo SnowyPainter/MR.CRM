@@ -13,6 +13,7 @@ router.get('/', auth.checkLogin, (req, res) => {
 
 function parsePermission(permission) {
   let p = []
+  if(permission == null) return p;
   permission.split(',').forEach(team => {
     const s = team.trim().split(' ')
     p.push([s[0], s[1]])

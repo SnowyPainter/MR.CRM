@@ -12,6 +12,9 @@
             <div class="container">
                 <h1 class="title">Team Information</h1>
                 <input id="teamName" placeholder="Team Name"></br>
+                <ul id="addedUserList">
+                    
+                </ul>
                 <select id="userList">
 
                 </select>
@@ -19,37 +22,12 @@
                     <option value="R">Read Only</option>
                     <option value="RW">Read Write</option>
                 </select>
-                <button onclick="addTeamMember()">Add memeber</button></br>
+                <button onclick="pushMemberToArray()">Add memeber</button></br>
                 <button onclick="createTeam()">Create</button>
             </div>
         </div>
         <script src="/javascripts/base.js"></script>
-        <script>
-            function addTeamMember() {
-                const user = document.getElementById("userList").value;
-                const permission = document.getElementById("userPermission").value;
-                getAjax("/teams/add/member/"+user+"?p="+permission, (res) => {
-                    const result = JSON.parse(res);
-                    if(!result.err) {
-                        alert("Member added");
-                    }
-                })
-            }
-            function createTeam() {
-                const teamName = document.getElementById("teamName").value;
-                getAjax("/teams/create/?team="+teamName, (res) => {
-                    const result = JSON.parse(res);
-                    if(!result.err) {
-                        alert("Team created");
-                    }
-                })
-            }
-            const prev = window.onload;
-            window.onload = () => {
-                if (prev) prev();
-                refreshAddFieldContainer();
-            } 
-        </script>
+        <script src="/javascripts/createTeam.js"></script>
 </body>
 
 </html>
