@@ -36,8 +36,10 @@ router.get('/get/:table/:id', (req, res) => {
 })
 router.get('/add/form', (req, res) => {
     const quests = req.query.quests;
+    const title = req.query.title;
     res.db.insert("ReportForm", {
-        "quests" : quests
+        "quests" : quests,
+        "title": title,
     })
     res.send(quests)
 })

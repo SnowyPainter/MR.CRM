@@ -51,3 +51,6 @@ input:focus {
 .container #preview {
   min-width: 350px;
 }
+.container #formTitle {
+  font-size: 15px;
+}

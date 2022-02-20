@@ -113,20 +113,23 @@ module.exports.initialize = () => {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
             "manager": "INTEGER",
             "email": "TEXT",
+            "name" : "TEXT",
             "password": "TEXT",
             "permission": "TEXT",
             "team": "TEXT"
         }));
-        /* this.insert("User", {
+         this.insert("User", {
             "manager":"1",
             "email":"a",
+            "name":"a",
             "password":"1",
             "permission": "1 R, 2 RW",
             "team": "1"
-        }) */
+        })
         db.run(createTableString("ReportForm", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-            "quests": "TEXT"
+            "quests": "TEXT",
+            "title" : "TEXT"
         }))
         db.run(createTableString("ReportFormField", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",

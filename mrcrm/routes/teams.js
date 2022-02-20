@@ -7,10 +7,16 @@ const { redirect } = require('express/lib/response');
 
 router.use('/', auth.authIfNotRedirectLogin);
 
+router.get('/add/member/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const permission = req.params.p;
+    //add permission to user
+})
+
 router.get('/create', (req, res) => {
     if(res.data.manager != 1) redirect('/')
-
-    //팀생성
+    const teamName = req.params.team;
+    
 })
 
 router.get('/:id', (req, res) => {

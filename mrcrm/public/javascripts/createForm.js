@@ -111,10 +111,12 @@ function clearPreview() {
     refreshPreviewContainer();
 }
 function createForm() {
+    const title = document.getElementById("formTitle").value
     if(addedQuests.length == 0) return;
+    if(title == "") { alert("Make name of this form."); return;}
     const str = addedQuests.join(' ')
-    getAjax("/report/add/form?quests="+str, (res) => {
-        alert(res);
+    getAjax("/report/add/form?quests="+str+"&title="+title, (res) => {
+        alert("Well created");
     })
 }
 

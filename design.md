@@ -54,7 +54,7 @@ sqlite3 를 사용한다.
 ## 유저
 id INTEGER PRIMARY KEY AUTOINCREMENT, manager INTEGER, email TEXT, password TEXT, permission TEXT, team TEXT
 permission 는 1 R,5 RW 꼴의 문자열, 각각 1팀 읽기 가능, 5팀 읽기쓰기 가능이다.  
-team는 소속팀이고, team table의 id 이다.
+team는 소속팀이고, team table의 id 이다. 이 구조에서 유저의 team은 부차적 요소이고, 직접적인 접근에 영향을 미치는 것은 permission 이다.
 ## 팀
 id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT
 ## 보고서 양식
