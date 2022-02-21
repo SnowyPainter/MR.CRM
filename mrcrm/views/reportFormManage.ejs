@@ -8,9 +8,12 @@
     <%- include('./navbar.ejs') %> 
     <div id="main">
       <div class="container">
+        <h1 class="title">Forms</h1>
+        <ul class="listbox height300 width250">
             <% for(let i = 0;i < forms.length;i++) { %> 
                 <li><a href="/report/manage/<%= forms[i].id %>"><%= forms[i].title %></a></li>
             <% } %>
+        </ul>
       </div>
     </div>
     <script src="/javascripts/base.js"></script>

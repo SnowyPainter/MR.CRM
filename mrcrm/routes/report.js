@@ -21,7 +21,8 @@ router.get('/form/manage', (req, res) => {
     res.db.select("ReportForm", ["id", "title"], "", (err, rows) => {
         if(!err) {
             res.render("reportFormManage", {
-                forms:rows
+                forms:rows,
+                data:res.data
             })
         } else {
             res.redirect("/")

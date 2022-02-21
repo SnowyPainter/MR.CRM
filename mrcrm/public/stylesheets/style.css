@@ -31,6 +31,7 @@ input:focus {
   margin-left: 200px;
 }
 #main .title {
+  font-size: 24px;
   margin: 0;
 }
 .container {
@@ -56,4 +57,29 @@ input:focus {
 }
 .container #addedUserList li button {
   margin-left: 10px;
+}
+
+.listbox {
+  overflow-y: scroll;
+  list-style: none;
+}
+.height300 {
+  height:300px;
+}
+.width250 {
+  width:250px;
+}
+.listbox {
+  padding: 0;
+}
+.listbox li {
+  margin: 0;
+  margin:10px;
+}
+.listbox a {
+  text-decoration: none;
+  color:black;
+}
+.listbox a:hover {
+  color:#5f0979;
 }
