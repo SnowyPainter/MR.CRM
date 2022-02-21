@@ -54,3 +54,6 @@ input:focus {
 .container #formTitle {
   font-size: 15px;
 }
+.container #addedUserList li button {
+  margin-left: 10px;
+}

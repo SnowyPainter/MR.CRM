@@ -14,7 +14,7 @@ function pushMember(id, name, permission) {
     let currIndex = membersIntoTeam.length -1;
     let li = document.createElement("li")
     let deleteBtn = document.createElement("button")
-    li.innerText = name
+    li.innerText = name+" "+(permission == "R" ? "Read only" : "Read and Write")
     deleteBtn.innerText = "X"
     deleteBtn.addEventListener("click", () => {
         li.parentNode.removeChild(li)
