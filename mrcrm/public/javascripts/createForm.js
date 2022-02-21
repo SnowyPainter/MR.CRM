@@ -29,7 +29,7 @@ function updateField(e) {
 function addQuest(event) {
     let fieldId = document.getElementById("fieldSelect").value;
     let type = document.getElementById("typeSelect").value; 
-
+    if(fieldId == "") return;
     getAjax("/report/add/quest?fieldId="+fieldId+"&type="+type, (res) => {
       refreshConstructContainer(false);
     })
