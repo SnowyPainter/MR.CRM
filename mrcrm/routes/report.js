@@ -76,7 +76,7 @@ router.get('/add/form', (req, res) => {
     res.db.insert("ReportForm", {
         "quests" : quests,
         "title": title,
-    }, "")
+    })
     res.send(quests)
 })
 router.get('/add/quest', (req, res) => {
