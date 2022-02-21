@@ -15,10 +15,18 @@ router.get('/create', (req, res) => {
     });
 })
 
-router.get('/manage', (req, res) => {
+router.get('/form/manage', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')
 
-    
+    res.db.select("ReportForm", ["id", "title"], "", (err, rows) => {
+        if(!err) {
+            res.render("reportFormManage", {
+                forms:rows
+            })
+        } else {
+            res.redirect("/")
+        }
+    })
 })
 router.get('/manage/:formId', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')

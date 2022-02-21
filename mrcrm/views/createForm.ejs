@@ -3,26 +3,30 @@
 
 <head>
   <%- include('./header.ejs') %>
-    <title><%= (creation==false ? (typeof(title) == "undefined" ? "Create new form" : title) : "Create new form") %></title>
+    <title>
+      <%= (creation==false ? (typeof(title)=="undefined" ? "Create new form" : title) : "Create new form" ) %>
+    </title>
 </head>
 
 <body>
   <%- include('./navbar.ejs') %>
     <div id="main">
       <div class="container">
-        <h1 class="title"><%= (creation==false ? "Update preview" : "Preview") %></h1>
+        <h1 class="title">
+          <%= (creation==false ? "Update preview" : "Preview" ) %>
+        </h1>
         <input type="text" id="formTitle" value="<%= (creation==false ? title : "") %>" placeholder="Title">
         <div id="preview">
-          
+
         </div>
         <select id="questSelect"></select>
         <button onclick="addQuestToPreview()">Add</button>
         <% if(creation==true) { %>
           <button onclick="createForm()">Create</button>
-        <% } else { %>
-          <button onclick="updateForm()">Update</button>
-        <% } %>
-        <button onclick="clearPreview()">Clear</button>
+          <% } else { %>
+            <button onclick="updateForm()">Update</button>
+            <% } %>
+              <button onclick="clearPreview()">Clear</button>
       </div>
       <div class="container" id="construct">
         <h1 class="title">Construct form</h1>
@@ -127,7 +131,7 @@
         quest.appendChild(select);
         quest.appendChild(typeselect)
 
-        if(creation == "true") {
+        if (creation == "true") {
           quest.appendChild(editBtn);
           quest.appendChild(deleteBtn);
         }
@@ -147,7 +151,7 @@
         deleteBtn.innerText = "X";
         field.appendChild(input);
 
-        if(creation == "true") {
+        if (creation == "true") {
           field.appendChild(editBtn);
           field.appendChild(deleteBtn);
         }
@@ -169,12 +173,12 @@
 
       function updateForm() {
         const title = document.getElementById("formTitle").value;
-        if(title == '') {
+        if (title == '') {
           alert("Title must not be empty.")
         }
-        getAjax("/report/update/form/"+formId+"?quests="+addedQuests.join(' ')+"&title="+title, (res) => {
+        getAjax("/report/update/form/" + formId + "?quests=" + addedQuests.join(' ') + "&title=" + title, (res) => {
           const json = JSON.parse(res)
-          if(json.result) {
+          if (json.result) {
             alert("Updated.")
           } else {
             alert("Failed to update.")
@@ -271,22 +275,23 @@
       window.onload = () => {
         if (prev) prev();
         refreshAddFieldContainer();
-        if(formId == '') {
-          alert("System error. redirect to root");
-          window.location.href = "/";
-        }
-        if(creation == "false") {
+
+        if (creation == "false") {
+          if (formId == '') {
+            alert("System error. redirect to root");
+            window.location.href = "/";
+          }
           let quests = "<%= (typeof(quests) == 'undefined' ? '' : quests) %>";
           quests = quests.split(',')
           let preview = document.getElementById("preview")
-          for(let i = 0;i < quests.length;i++) {
-            getAjax("/report/get/ReportFormQuest/"+quests[i], (res) => {
-              if(res != undefined) {
+          for (let i = 0; i < quests.length; i++) {
+            getAjax("/report/get/ReportFormQuest/" + quests[i], (res) => {
+              if (res != undefined) {
                 const data = JSON.parse(res).rows[0];
-                if(data != {}) {
-                  getAjax("/report/get/ReportFormField/"+data.fieldId, (res) => {
+                if (data != {}) {
+                  getAjax("/report/get/ReportFormField/" + data.fieldId, (res) => {
                     const f = JSON.parse(res).rows[0].field;
-                    preview.appendChild(createPreviewElement(data.id, f ,data.submitType))
+                    preview.appendChild(createPreviewElement(data.id, f, data.submitType))
                     addedQuests.push(data.id)
                   })
                 }

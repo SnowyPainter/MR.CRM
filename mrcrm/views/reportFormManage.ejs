@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./header.ejs') %>
+    <title>Index</title>
+  </head>
+  <body>
+    <%- include('./navbar.ejs') %> 
+    <div id="main">
+      <div class="container">
+            <% for(let i = 0;i < forms.length;i++) { %> 
+                <li><a href="/report/manage/<%= forms[i].id %>"><%= forms[i].title %></a></li>
+            <% } %>
+      </div>
+    </div>
+    <script src="/javascripts/base.js"></script>
+  </body>
+</html>
