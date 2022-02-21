@@ -2,7 +2,10 @@
 <ul id="navbar">
     <li><a href="/">Home</a></li>
     <li><a href="/user/">User</a></li>
-    <% if(data != undefined && data.manager) { %>
+    <% if(typeof(data) != "undefined" && data != undefined && data.manager) { %>
+        <li><a href="/user/manage">Manage Users</a></li>
+        <li><a href="/teams/manage">Manage Teams</a></li>
+        <li><a href="/report/manage">Manage Report Form</a></li>
         <li><a href="/report/create">New Report Form</a></li>
         <li><a href="/teams/create">New Team</a></li>
     <% } %>

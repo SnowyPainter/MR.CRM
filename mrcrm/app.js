@@ -6,7 +6,7 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 
 let indexRouter = require('./routes/index');
-let loginRouter = require('./routes/login');
+let userRouter = require('./routes/user');
 let reportRouter = require('./routes/report')
 let teamsRouter = require('./routes/teams');
 let db = require('./database/db') 
@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/', indexRouter);
-app.use('/user', loginRouter);
+app.use('/user', userRouter);
 app.use('/report', reportRouter)
 app.use('/teams', teamsRouter);
 

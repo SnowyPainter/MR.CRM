@@ -10,9 +10,34 @@ router.get('/create', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')
 
     res.render('createForm', {
+        creation: true,
         data: res.data
     });
 })
+
+router.get('/manage', (req, res) => {
+    if (res.data.manager != 1) res.redirect('/')
+
+    
+})
+router.get('/manage/:formId', (req, res) => {
+    if (res.data.manager != 1) res.redirect('/')
+
+    res.db.select("ReportForm", [],"WHERE id="+req.params.formId, (err, rows) => {
+        if(!err && rows.length > 0) {
+            res.render("createForm", {
+                creation: false,
+                formId: rows[0].id,
+                quests: rows[0].quests.split(' '),
+                title:rows[0].title,
+                data: res.data,
+            })
+        } else {
+            res.send(err)
+        }
+    })
+})
+
 router.get('/get/list/:table', (req, res) => {
     if (res.data.manager != 1) res.json({ data: [] });
     res.db.select(req.params.table, [], "", (err, rows) => {
@@ -34,13 +59,24 @@ router.get('/get/:table/:id', (req, res) => {
         }
     })
 })
+router.get('/update/form/:id', (req,res) => {
+    const id = req.params.id;
+    const qs = req.query.quests;
+    const title = req.query.title;
+
+    res.db.update("ReportForm", {
+        "title": title,
+        "quests": qs,
+    }, "WHERE id="+id)
+    res.json({result:true})
+})
 router.get('/add/form', (req, res) => {
     const quests = req.query.quests;
     const title = req.query.title;
     res.db.insert("ReportForm", {
         "quests" : quests,
         "title": title,
-    })
+    }, "")
     res.send(quests)
 })
 router.get('/add/quest', (req, res) => {

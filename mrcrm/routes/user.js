@@ -21,6 +21,21 @@ function parsePermission(permission) {
   return p
 }
 
+router.get('/manage', auth.authIfNotRedirectLogin,(req, res) => {
+  if (res.data.manager != 1) res.json({ err: "not manager" })
+  
+  res.db.select("User", [], "", (err, rows) => {
+    if(!err) {
+      res.render("userManage", {
+        users: rows,
+        data: res.data
+      });
+    } else {
+      res.send(err);
+    }
+  })
+})
+
 router.post('/login', (req, res) => {
   res.db.select("User", [], "WHERE email='"+req.body.email+"' AND "+"password='"+req.body.password+"'", (err, rows) => {
     if(!err && rows.length > 0) {
