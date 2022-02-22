@@ -1,36 +1,102 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <%- include('./header.ejs') %>
+
+<head>
+  <%- include('./header.ejs') %>
     <title>Index</title>
-  </head>
-  <body>
-    <%- include('./navbar.ejs') %> 
+</head>
+
+<body>
+  <%- include('./navbar.ejs') %>
     <div id="main">
       <div class="container">
-          <table>
-              <thead>
+        <h1 class="title">User Management</h1>
+        <div class="users-table">
+          <% for(let i=0;i < users.length;i++) { %>
+            <form action="/user/update" method="GET">
+            <div class="row width300" id="<%= users[i].id %>">
+              <table>
+                <thead>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Is Manager</th>
+                </thead>
+                <tbody>
                   <tr>
-                    <td>Id</td>
-                    <td>Manager</td>
-                    <td>Name</td>
-                    <td>Email</td>
-                    <td>Manager</td>
-                    <td>Team</td>
-                    <td>Permission</td>
+                    <td><%= users[i].name%></td>
+                    <td><%= users[i].email%></td>
+                    <td><%= (users[i].manager == "1" ? "Manager" : "")%></td>
                   </tr>
-              </thead>
-              <tbody>
-                <% for(let i = 0;i < users.length;i++) { %>
-                  <tr>
-                      <td><%= users[i].id%></td>
-                  </tr>
-                <% } %>
-              </tbody>
-          </table>
+                </tbody>
+              </table>
+              <button type="button" class="detailBtn right">Edit</button>
+            </div>
+            <div class="collapse-content row-detail <%= users[i].id %>">
+              <p>Information</p>
+              <ul class="user-information-list">
+                <li>Name : <input name="name" value="<%= users[i].name %>"></li>
+                <li>Email : <input name="email" value="<%= users[i].email %>"></li>
+                <li>Password : <input value="<%= users[i].password%>"</li>
+                <li>Is Manager : 
+                  <select name="ismanager" class="managerOrNotSelect">
+                    <option value="1">Manager</option>
+                    <option value="0">Not manager</option>
+                  </select>
+                </li>
+              </ul>
+              <p>Team permission</p>
+              <ul class="team-list">
+
+              </ul>
+            </div>
+            </form>
+            <script>
+              if("<%= users[i].manager %>" == "1")
+                document.getElementsByClassName("<%= users[i].id %>")[0].getElementsByClassName("managerOrNotSelect").value = 1;
+              else
+                document.getElementsByClassName("<%= users[i].id %>")[0].getElementsByClassName("managerOrNotSelect").value = 0;
+
+              "<%= users[i].permission%>".split(',').forEach((p) => {
+                let row = document.getElementById("<%= users[i].id%>").nextElementSibling;
+                let ul = row.getElementsByClassName("team-list")[0];
+                ul.classList.add("overflow-y")
+                ul.classList.add("height150")
+                p = p.trim().split(' ');
+                const teamId = p[0];
+                const permission = p[1];
+                getAjax("/teams/get/" + teamId, (res) => {
+                  const team = JSON.parse(res).team;
+                  let li = document.createElement("li");
+                  li.innerHTML = team.name+" : "+"<select><option value='R'>Read-only</option><option value='RW'>Read&Write</option></select>";
+                  ul.appendChild(li);
+                  let select = li.getElementsByTagName("select")[0];
+                  select.name = "[team]"+teamId
+                  for(let i = 0;i < select.options.length;i++) {
+                    if(select.options[i].value == permission) {
+                      select.selectedIndex = i;
+                      break;
+                    }
+                  }
+                });
+                row.appendChild(ul);
+              })
+              document.getElementById("<%= users[i].id%>").getElementsByClassName("detailBtn")[0].addEventListener("click", () => {
+                let div = document.getElementById("<%= users[i].id%>").nextElementSibling;
+                let form = document.getElementById("<%= users[i].id %>").parentElement;
+                if (div.style.display == "block") {
+                  form.submit();
+                  div.style.display = "none";
+                } else {
+                  form.getElementsByClassName("detailBtn")[0].innerText = "Save";
+                  div.style.display = "block";
+                }
+              })
+            </script>
+            <% } %>
+        </div>
       </div>
-    </div>
-    <script src="/javascripts/base.js"></script>
-    <script src="/javascripts/userManage.js"></script>
-  </body>
+      <script src="/javascripts/base.js"></script>
+      <script src="/javascripts/userManage.js"></script>
+</body>
+
 </html>

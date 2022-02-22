@@ -97,4 +97,15 @@ router.get('/get/list', (req, res) => {
     }
 })
 
+router.get('/get/:teamId', (req, res) => {
+    const teamId = req.params.teamId;
+    res.db.select("Team", ["name"], "WHERE id="+teamId, (err, rows) => {
+        if(!err) {
+            res.json({team:rows[0]})
+        } else {
+            res.json({team:[]})
+        }
+    })
+})
+
 module.exports = router;

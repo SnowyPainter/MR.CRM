@@ -35,6 +35,11 @@ router.get('/manage', auth.authIfNotRedirectLogin,(req, res) => {
     }
   })
 })
+router.get('/update', (req, res) => {
+  console.log(req.query)
+  res.redirect('/user/manage');
+})
+
 
 router.post('/login', (req, res) => {
   res.db.select("User", [], "WHERE email='"+req.body.email+"' AND "+"password='"+req.body.password+"'", (err, rows) => {
