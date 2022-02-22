@@ -11,13 +11,21 @@
           <table>
               <thead>
                   <tr>
-                    <td></td>
+                    <td>Id</td>
+                    <td>Manager</td>
+                    <td>Name</td>
+                    <td>Email</td>
+                    <td>Manager</td>
+                    <td>Team</td>
+                    <td>Permission</td>
                   </tr>
               </thead>
               <tbody>
+                <% for(let i = 0;i < users.length;i++) { %>
                   <tr>
-                      <td></td>
+                      <td><%= users[i].id%></td>
                   </tr>
+                <% } %>
               </tbody>
           </table>
       </div>

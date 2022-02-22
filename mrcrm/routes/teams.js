@@ -18,14 +18,18 @@ router.get('/add/member/:userId', (req, res) => {
         if (!err) {
             const row = rows[0];
             let permission = auth.permissionUpdateOrInsert(teamId, newPermission, row.permission);
+
             const user = {
                 id: row.id,
                 email: row.email,
+                name: row.name,
                 manager: row.manager,
-                permission: auth.parsePermission(row.permission)
+                permission: auth.parsePermission(permission)
             }
             let token = jwt.sign(user, config.secretCode);
+            res.clearCookie("auth-token")
             res.cookie("auth-token", token);
+
             res.db.update("User", {
                 "permission": permission
             }, "WHERE id=" + userId);

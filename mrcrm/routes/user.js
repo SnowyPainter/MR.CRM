@@ -43,6 +43,7 @@ router.post('/login', (req, res) => {
       const user = {
         id: row.id,
         email: row.email,
+        name: row.name,
         manager: row.manager,
         permission: parsePermission(row.permission)
       }

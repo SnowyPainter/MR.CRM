@@ -30,6 +30,10 @@
                             <td><%= data.email%></td>
                         </tr>
                         <tr>
+                            <td>Name</td>
+                            <td><%= data.name%></td>
+                        </tr>
+                        <tr>
                             <td>Permission</td>
                             <% for(let i = 0;i < data.permission.length;i++) { %>
                                 <td><%= data.permission[i][0]%> : <%= data.permission[i][1]%></td>
