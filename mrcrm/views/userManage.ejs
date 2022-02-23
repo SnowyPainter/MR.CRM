@@ -9,10 +9,11 @@
 <body>
   <%- include('./navbar.ejs') %>
     <div id="main">
+      <% for(let i=0;i < users.length;i++) { %>
       <div class="container">
-        <h1 class="title">User Management</h1>
+        <h1 class="title">User <%= users[i].id %></h1>
         <div class="users-table">
-          <% for(let i=0;i < users.length;i++) { %>
+         
             <form action="/user/update" method="GET">
             <div class="row width300" id="<%= users[i].id %>">
               <table>
@@ -32,7 +33,7 @@
               <button type="button" class="detailBtn right">Edit</button>
             </div>
             <div class="collapse-content row-detail <%= users[i].id %>">
-              <p>Information</p>
+              <p class="subtitle">Information</p>
               <ul class="user-information-list">
                 <li>Name : <input name="name" value="<%= users[i].name %>"></li>
                 <li>Email : <input name="email" value="<%= users[i].email %>"></li>
@@ -44,7 +45,7 @@
                   </select>
                 </li>
               </ul>
-              <p>Team permission</p>
+              <p class="subtitle">Team permission</p>
               <ul class="team-list">
 
               </ul>
@@ -83,20 +84,26 @@
               document.getElementById("<%= users[i].id%>").getElementsByClassName("detailBtn")[0].addEventListener("click", () => {
                 let div = document.getElementById("<%= users[i].id%>").nextElementSibling;
                 let form = document.getElementById("<%= users[i].id %>").parentElement;
+                let btn =form.getElementsByClassName("detailBtn")[0];
                 if (div.style.display == "block") {
-                  form.submit();
+                  if(confirm("Surely Save?")) {
+                    form.submit();
+                  }
+                  btn.innerText = "Edit"
                   div.style.display = "none";
                 } else {
-                  form.getElementsByClassName("detailBtn")[0].innerText = "Save";
+                  btn.innerText = "Save";
                   div.style.display = "block";
                 }
               })
             </script>
-            <% } %>
         </div>
+        
       </div>
+      <% } %>
       <script src="/javascripts/base.js"></script>
       <script src="/javascripts/userManage.js"></script>
+    </div>
 </body>
 
 </html>

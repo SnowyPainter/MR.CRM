@@ -112,6 +112,32 @@ input:focus {
 .collapse-content {
   display: none;
 }
+.row-detail {
+  border: solid black 1px;
+  margin-top: 10px;
+  padding:10px;
+  border-radius: 10px;
+}
+.row-detail p {
+  margin-top: 0;
+  padding: 5px;
+}
+.row-detail ul {
+  padding-left: 5px;
+  list-style: none;
+}
+.row-detail .subtitle {
+  font-size: 15px;
+  font-weight: bold;
+}
+.row-detail input,select {
+  float: right;
+  width: 150px;
+  font-size: 12px;
+}
+.row {
+  margin-top: 20px;
+}
 .row .right {
   float: right;
 }
