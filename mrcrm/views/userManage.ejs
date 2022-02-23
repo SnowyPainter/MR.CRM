@@ -68,8 +68,17 @@
                 getAjax("/teams/get/" + teamId, (res) => {
                   const team = JSON.parse(res).team;
                   let li = document.createElement("li");
-                  li.innerHTML = team.name+" : "+"<select><option value='R'>Read-only</option><option value='RW'>Read&Write</option></select>";
+                  let delBtn = document.createElement("button");
+                  delBtn.type = "button";
+                  delBtn.innerText = "X";
+                  delBtn.classList.add("floatright")
+                  li.innerHTML = team.name+" "+"<select><option value='R'>Read-only</option><option value='RW'>Read&Write</option></select>";
+                  delBtn.addEventListener("click", () => {
+                    li.parentElement.removeChild(li);
+                  })
+                  li.appendChild(delBtn);
                   ul.appendChild(li);
+
                   let select = li.getElementsByTagName("select")[0];
                   select.name = "[team]"+teamId
                   for(let i = 0;i < select.options.length;i++) {

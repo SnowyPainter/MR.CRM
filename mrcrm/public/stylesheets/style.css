@@ -126,6 +126,9 @@ input:focus {
   padding-left: 5px;
   list-style: none;
 }
+.floatright {
+  float:right
+}
 .row-detail .subtitle {
   font-size: 15px;
   font-weight: bold;

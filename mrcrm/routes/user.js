@@ -36,6 +36,8 @@ router.get('/manage', auth.authIfNotRedirectLogin,(req, res) => {
   })
 })
 router.get('/update', (req, res) => {
+  if (res.data.manager != 1) res.json({ err: "not manager" })
+
   console.log(req.query)
   res.redirect('/user/manage');
 })
