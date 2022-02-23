@@ -57,7 +57,36 @@ router.get('/create', (req, res) => {
         data: res.data
     });
 })
+router.get('/manage', (req, res) => {
+    if (res.data.manager != 1) res.redirect('/')
 
+    res.db.getTeamUrlPairs((teams) => {
+        res.render("manageTeam", { teams: teams })
+    })
+})
+router.get('/edit/:id', (req,res) => {
+    if (res.data.manager != 1) res.redirect('/')
+    const teamId = req.params.id;
+    res.db.select("Team", [], "WHERE id="+teamId, (err, rows) => {
+        if(!err) {
+            res.render("editTeam", {
+                id:rows[0].id,
+                name:rows[0].name
+            });
+        }
+    })
+})
+router.get('/update/:teamId', (req,res) => {
+    if (res.data.manager != 1) { res.json({err:"not manager"}); return; }
+    const teamId = req.params.teamId;
+    const name = req.query.name;
+
+    res.db.update("Team", {
+        "name": name,
+    }, "WHERE id="+teamId)
+
+    res.json({})
+});
 router.get('/:id', (req, res) => {
     const id = req.params.id
     new Promise((rs, rj) => {

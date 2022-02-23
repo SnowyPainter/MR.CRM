@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('./header.ejs') %>
+        <title>
+            <%= name%>
+        </title>
+</head>
+
+<body>
+    <%- include('./navbar.ejs') %>
+        <div id="main">
+            <div class="container">
+                <h1 class="title"><input type="text" id="teamName" value="<%= name%>"></h1>
+                <ul id="userList">
+
+                </ul>
+                <select id="userSelect">
+
+                </select>
+                <button onclick="addMember()">Add member</button><br />
+                <button onclick="update()">Update</button>
+            </div>
+        </div>
+        <script src="/javascripts/base.js"></script>
+        <script>
+            let members = []
+
+            let userSelect = document.getElementById("userSelect");
+            let userList = document.getElementById("userList");
+
+            getAjax("/user/get/list", (res) => {
+                JSON.parse(res).users.forEach(user => {
+                    const id = "" + user.id;
+                    const name = user.name;
+                    let opt = document.createElement("option")
+                    opt.innerText = name;
+                    opt.value = id;
+                    if (user.team == "<%= id%>") {
+                        let li = createMemberRow(name, id);
+                        userList.appendChild(li);
+                        members.push(id)
+                    }
+                    userSelect.appendChild(opt);
+                });
+            })
+            function createMemberRow(userName, userId) {
+                let li = document.createElement("li")
+                let del = document.createElement("button")
+                del.innerText = "X";
+                del.addEventListener("click", () => {
+                    li.parentNode.removeChild(li);
+                    members.splice(members.indexOf(id), 1);
+                })
+                li.innerText = userName;
+                li.appendChild(del);
+                return li;
+            }
+            function addMember() {
+                const sel = document.getElementById("userSelect");
+                const id = sel.value;
+                const name = sel.options[sel.selectedIndex].innerText;
+                if (members.includes(id)) { alert("Already added."); return; }
+                document.getElementById("userList").appendChild(createMemberRow(name,id))
+                members.push(id);
+            }
+
+            function update() {
+                const teamId = "<%= id %>"
+                members.forEach((member) => {
+                    getAjax("/user/update/team/" + member + "?teamId=" + teamId, (res) => { })
+                })
+                const name = document.getElementById("teamName").value;
+                getAjax("/teams/update/" + teamId + "?name=" + name, (res) => { })
+            }
+        </script>
+</body>
+
+</html>

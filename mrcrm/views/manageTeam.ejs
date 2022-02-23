@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./header.ejs') %>
+    <title>Team list</title>
+  </head>
+  <body>
+    <%- include('./navbar.ejs') %> 
+    <div id="main">
+      <div class="container">
+        <h1 class="title">Teams</h1>
+        <ul>
+        <% for(let i = 0;i < teams.length;i++) { %>
+            <li><a href="/teams/edit/<%= teams[i][1].replace('/teams/', '')%>"><%= teams[i][0]%></a></li>        
+        <% } %>
+        </ul>
+      </div>
+    </div>
+    <script src="/javascripts/base.js"></script>
+  </body>
+</html>

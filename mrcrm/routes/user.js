@@ -25,6 +25,15 @@ router.get('/manage', auth.authIfNotRedirectLogin,(req, res) => {
     }
   })
 })
+router.get('/update/team/:id', auth.authIfNotRedirectLogin, (req, res) => {
+  const userId = req.params.id;
+  const teamId = req.query.teamId;
+
+  res.db.update("User", {
+    "team": teamId
+  }, "WHERE id="+userId)
+  res.json({})
+})
 router.get('/update/:id', auth.authIfNotRedirectLogin, (req, res) => {
   if (res.data.manager != 1) res.json({ err: "not manager" })
   const id = req.params.id;
@@ -47,6 +56,15 @@ router.get('/update/:id', auth.authIfNotRedirectLogin, (req, res) => {
   res.redirect('/user/manage');
 })
 
+router.get('/get/list', (req, res) => {
+  res.db.select("User", [], "", (err, rows) => {
+    if(!err) {
+      res.json({users:rows})
+    } else {
+      res.json({err:err})
+    }
+  })
+})
 router.get('/get/team/:id', (req, res) => {
   const id = req.params.id;
   res.db.select("User", ["team"], "WHERE id="+id, (err, rows) => {
