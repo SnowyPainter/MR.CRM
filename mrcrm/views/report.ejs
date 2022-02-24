@@ -9,7 +9,10 @@
     <div id="main">
       <div class="container">
         <h1 class="title">Submit <span id="formTitle"></span></h1>
-        <form method="POST" action="/report/submit" id="form">
+        <form method="POST" enctype="multipart/form-data" action="/report/submit" id="form">
+          <input id="formId" name="formId" hidden>
+          <input name="teamId" value="<%= teamId%>" hidden>
+          <input name="userId" value="<%= data.id%>" hidden>
           <ol id="questsList">
 
           </ol>
@@ -26,6 +29,8 @@
       let form = document.getElementById("form");
       let questsList = document.getElementById("questsList");
       let formSelect = document.getElementById("formSelect");
+      let formTitle = document.getElementById("formTitle");
+
       const teamId = "<%= teamId%>"
       getAjax("/report/get/list/ReportForm", (res) => {
         JSON.parse(res).data.forEach(element => {
@@ -41,10 +46,9 @@
       formSelect.addEventListener("change", (e) => {
         while(questsList.firstChild) { questsList.removeChild(questsList.lastChild); }
         const sender = e.target
-        
-        const formId = sender.id;
+        document.getElementById("formId").value = sender.options[sender.selectedIndex].id;
         const quests = sender.value.split(' ');
-        const formTitle = sender.innerText;
+        formTitle.innerText = sender.options[sender.selectedIndex].innerText;
         
         quests.forEach(questId => {
           let li = document.createElement("li")

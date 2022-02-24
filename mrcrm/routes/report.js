@@ -1,23 +1,50 @@
-var express = require('express');
-var config = require('../config/config')
-var router = express.Router();
-const jwt = require('jsonwebtoken');
+let express = require('express');
+let fs = require('fs')
+let router = express.Router();
 const auth = require('./auth')
 
 router.use('/', auth.authIfNotRedirectLogin);
 
-router.get('/', (req,res) => {
+router.get('/', (req, res) => {
     const teamId = req.query.teamId;
 
     res.render("report", {
-        teamId:teamId,
+        teamId: teamId,
         data: res.data
     })
 })
 
 router.post('/submit', (req, res) => {
-    console.log(req.body)
-    res.redirect('/teams/')
+    let data = {};
+    let stopSubmit = false;
+    if (req.files)
+        for (const [questId, file] of Object.entries(req.files)) {
+            if (stopSubmit == true) break;
+
+            const filename = req.rootDir + "\\" + Date.now() + "." + file.name.split(".")[1];
+            fs.writeFileSync(filename, file.data, (err) => { 
+                if (err) stopSubmit = true; 
+            })
+            if (stopSubmit) {
+                res.send("Failed to report. Something went wrong");
+                return;
+            } else {
+                data[questId] = filename;
+            }
+        }
+    for (const [questId, value] of Object.entries(req.body)) {
+        data[questId] = value;
+    }
+
+    res.db.insert("Report", {
+        "user":req.body.userId,
+        "form":req.body.formId,
+        "team":req.body.teamId,
+        "data":JSON.stringify(data),
+        "date":Date.now()
+    })
+    
+    res.redirect('back')
 })
 
 router.get('/create', (req, res) => {
@@ -33,10 +60,10 @@ router.get('/form/manage', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')
 
     res.db.select("ReportForm", ["id", "title"], "", (err, rows) => {
-        if(!err) {
+        if (!err) {
             res.render("reportFormManage", {
-                forms:rows,
-                data:res.data
+                forms: rows,
+                data: res.data
             })
         } else {
             res.redirect("/")
@@ -46,13 +73,13 @@ router.get('/form/manage', (req, res) => {
 router.get('/manage/:formId', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')
 
-    res.db.select("ReportForm", [],"WHERE id="+req.params.formId, (err, rows) => {
-        if(!err && rows.length > 0) {
+    res.db.select("ReportForm", [], "WHERE id=" + req.params.formId, (err, rows) => {
+        if (!err && rows.length > 0) {
             res.render("createForm", {
                 creation: false,
                 formId: rows[0].id,
                 quests: rows[0].quests.split(' '),
-                title:rows[0].title,
+                title: rows[0].title,
                 data: res.data,
             })
         } else {
@@ -64,10 +91,10 @@ router.get('/manage/:formId', (req, res) => {
 router.get('/get/list/:table', (req, res) => {
     if (res.data.manager != 1) res.json({ data: [] });
     res.db.select(req.params.table, [], "", (err, rows) => {
-        if(!err)
+        if (!err)
             res.json({ data: rows });
         else
-            res.json({ err:err})
+            res.json({ err: err })
     })
 })
 
@@ -76,13 +103,13 @@ router.get('/get/:table/:id', (req, res) => {
     const id = req.params.id;
     res.db.select(table, [], "WHERE id=" + id, (err, rows) => {
         if (!err) {
-            res.json({rows:rows})
+            res.json({ rows: rows })
         } else {
-            res.json({err:err})
+            res.json({ err: err })
         }
     })
 })
-router.get('/update/form/:id', (req,res) => {
+router.get('/update/form/:id', (req, res) => {
     const id = req.params.id;
     const qs = req.query.quests;
     const title = req.query.title;
@@ -90,17 +117,17 @@ router.get('/update/form/:id', (req,res) => {
     res.db.update("ReportForm", {
         "title": title,
         "quests": qs,
-    }, "WHERE id="+id)
-    res.json({result:true})
+    }, "WHERE id=" + id)
+    res.json({ result: true })
 })
 router.get('/add/form', (req, res) => {
     const quests = req.query.quests;
     const title = req.query.title;
     res.db.insert("ReportForm", {
-        "quests" : quests,
+        "quests": quests,
         "title": title,
     })
-    res.send({result:true})
+    res.send({ result: true })
 })
 router.get('/add/quest', (req, res) => {
     const fieldId = req.query.fieldId;

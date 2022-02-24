@@ -4,6 +4,7 @@ let bodyParser = require("body-parser");
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+let fileupload = require('express-fileupload');
 
 let indexRouter = require('./routes/index');
 let userRouter = require('./routes/user');
@@ -21,10 +22,14 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(fileupload());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'uploads')));
+
 app.use((req, res, next) => {
   res.db = db;
+  req.rootDir = path.join(__dirname, 'uploads');
   next();
 })
 

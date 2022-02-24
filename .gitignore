@@ -1,5 +1,6 @@
 mrcrm/config/*
-
+mrcrm/uploads/*
+mrcrm/database/db.sqlite
 # Logs
 logs
 *.log
