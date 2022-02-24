@@ -50,8 +50,10 @@
                 let del = document.createElement("button")
                 del.innerText = "X";
                 del.addEventListener("click", () => {
-                    li.parentNode.removeChild(li);
-                    members.splice(members.indexOf(id), 1);
+                    getAjax("/user/update/team/" + userId + "?teamId=", (res) => {
+                        li.parentNode.removeChild(li);
+                        members.splice(members.indexOf(id), 1);
+                     })
                 })
                 li.innerText = userName;
                 li.appendChild(del);
