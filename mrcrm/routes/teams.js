@@ -74,7 +74,8 @@ router.get('/edit/:id', (req,res) => {
         if(!err) {
             res.render("editTeam", {
                 id:rows[0].id,
-                name:rows[0].name
+                name:rows[0].name,
+                data: res.data
             });
         }
     })

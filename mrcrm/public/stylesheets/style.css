@@ -136,11 +136,6 @@ input:focus {
   font-size: 15px;
   font-weight: bold;
 }
-.row-detail input,select {
-  float: right;
-  width: 150px;
-  font-size: 12px;
-}
 .row {
   margin-top: 20px;
 }
@@ -149,4 +144,8 @@ input:focus {
 }
 #userSelect {
   float:none;
+}
+form ol, ul {
+  list-style: none;
+  padding: 0;
 }

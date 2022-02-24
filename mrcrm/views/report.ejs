@@ -8,8 +8,11 @@
     <%- include('./navbar.ejs') %> 
     <div id="main">
       <div class="container">
-        <h1 class="title">Submit</h1>
+        <h1 class="title">Submit <span id="formTitle"></span></h1>
         <form method="POST" action="/report/submit" id="form">
+          <ol id="questsList">
+
+          </ol>
           <button type="submit">Submit</button>
         </form>
       </div>
@@ -21,10 +24,52 @@
     <script src="/javascripts/base.js"></script>
     <script>
       let form = document.getElementById("form");
-      
-      document.getElementById("formSelect").addEventListener("change", (e) => {
-        const sender = e.target
+      let questsList = document.getElementById("questsList");
+      let formSelect = document.getElementById("formSelect");
+      const teamId = "<%= teamId%>"
+      getAjax("/report/get/list/ReportForm", (res) => {
+        JSON.parse(res).data.forEach(element => {
+          let opt = document.createElement("option")
+          opt.id = element.id;
+          opt.value = element.quests;
+          opt.innerText = element.title;
+          formSelect.appendChild(opt)
+        });
       })
+      formSelect.selectedIndex = formSelect.options.length;
+
+      formSelect.addEventListener("change", (e) => {
+        while(questsList.firstChild) { questsList.removeChild(questsList.lastChild); }
+        const sender = e.target
+        
+        const formId = sender.id;
+        const quests = sender.value.split(' ');
+        const formTitle = sender.innerText;
+        
+        quests.forEach(questId => {
+          let li = document.createElement("li")
+          getAjax("/report/get/ReportFormQuest/"+questId, (res) => {
+            let json = JSON.parse(res);
+            if(json == undefined) return;
+            json = json.rows[0];
+            const fieldId = json.fieldId;
+            const submitType = json.submitType;
+            getAjax("/report/get/ReportFormField/"+fieldId, (res) => {
+              let json = JSON.parse(res);
+              if(json == undefined) return;
+              const fieldText = json.rows[0].field;
+              li.appendChild(_createQuestHtml(questId, fieldText, submitType, false))
+              questsList.appendChild(li)
+            })
+          })
+        })
+      })
+
+      const prev = window.onload;
+      window.onload = () => {
+        if (prev) prev();
+
+      }
     </script>
   </body>
 </html>

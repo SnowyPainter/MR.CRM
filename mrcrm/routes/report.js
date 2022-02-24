@@ -10,13 +10,14 @@ router.get('/', (req,res) => {
     const teamId = req.query.teamId;
 
     res.render("report", {
-        
+        teamId:teamId,
+        data: res.data
     })
 })
 
 router.post('/submit', (req, res) => {
     console.log(req.body)
-    res.json({})
+    res.redirect('/teams/')
 })
 
 router.get('/create', (req, res) => {
@@ -99,7 +100,7 @@ router.get('/add/form', (req, res) => {
         "quests" : quests,
         "title": title,
     })
-    res.send(quests)
+    res.send({result:true})
 })
 router.get('/add/quest', (req, res) => {
     const fieldId = req.query.fieldId;
