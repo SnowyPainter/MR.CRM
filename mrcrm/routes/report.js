@@ -1,5 +1,5 @@
 let express = require('express');
-let fs = require('fs')
+let fs = require('fs');
 let router = express.Router();
 const auth = require('./auth')
 
@@ -22,8 +22,8 @@ router.post('/submit', (req, res) => {
             if (stopSubmit == true) break;
 
             const filename = Date.now() + "." + file.name.split(".")[1];
-            fs.writeFileSync(req.rootDir + "\\" + filename, file.data, (err) => { 
-                if (err) stopSubmit = true; 
+            fs.writeFileSync(req.rootDir + "\\" + filename, file.data, (err) => {
+                if (err) stopSubmit = true;
             })
             if (stopSubmit) {
                 res.send("Failed to report. Something went wrong");
@@ -35,15 +35,15 @@ router.post('/submit', (req, res) => {
     for (const [questId, value] of Object.entries(req.body)) {
         data[questId] = value;
     }
-
-    res.db.insert("Report", {
-        "user":req.body.userId,
-        "form":req.body.formId,
-        "team":req.body.teamId,
-        "data":JSON.stringify(data),
-        "date":Date.now()
-    })
     
+    res.db.insert("Report", {
+        "user": req.body.userId,
+        "form": req.body.formId,
+        "team": req.body.teamId,
+        "data": JSON.stringify(data),
+        "date": Date.now()
+    })
+
     res.redirect('back')
 })
 
@@ -84,6 +84,22 @@ router.get('/manage/:formId', (req, res) => {
             })
         } else {
             res.send(err)
+        }
+    })
+})
+router.get('/get/reports', (req, res) => {
+    const limit = req.query.limit;
+    const offset = req.query.offset;
+    const teamId = req.query.team;
+
+    let condition = "WHERE team="+teamId+" ORDER BY date(date) DESC ";
+    if (limit) condition += "LIMIT " + limit + " OFFSET " + offset;
+    
+    res.db.select("Report", [], condition, (err, rows) => {
+        if (!err) {
+            res.json({ data: rows })
+        } else {
+            res.json({ err: err })
         }
     })
 })

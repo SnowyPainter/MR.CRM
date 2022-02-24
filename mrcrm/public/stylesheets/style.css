@@ -37,6 +37,10 @@ input:focus {
 #main .title input {
   font-size: 20px;
 }
+p {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
 .container {
   margin: 10px;
   padding: 10px;
@@ -66,8 +70,12 @@ input:focus {
   overflow-y: scroll;
   list-style: none;
 }
+
 .height300 {
   height:300px;
+}
+.width300 {
+  width:300px;
 }
 .height150 {
   height: 150px;
@@ -92,14 +100,14 @@ input:focus {
 .max-width500 {
   max-width: 500px;
 }
+.max-height500 {
+  max-height: 500px;
+}
 .overflow-x {
   overflow-x: scroll;
 }
 .overflow-y {
   overflow-y: scroll;
-}
-.width300 {
-  width:300px;
 }
 .users-table {
   text-align: left;
@@ -145,7 +153,12 @@ input:focus {
 #userSelect {
   float:none;
 }
-form ol, ul {
+ol, ul {
   list-style: none;
   padding: 0;
+}
+.report {
+  border: 1px solid black;
+  padding: 5px;
+  margin-top: 5px;
 }

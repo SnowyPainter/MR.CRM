@@ -16,10 +16,81 @@
             <h1 class="title">Submit Report</h1>
             <button onclick="report()">Submit Report</button>
         </div>
+        <div class="container overflow-y overflow-x max-height500 max-width500">
+            <h1 class="title">Reported</h1>
+            <ol id="reportList">
+            </ol>
+            <button onclick="loadReport20()">Load More</button>
+        </div>
     </div>
     <script src="/javascripts/base.js"></script>
     <script>
         const teamId = "<%= team.id%>"
+        const reportList = document.getElementById("reportList");
+        let currLoaded = 0;
+
+        function __createQuestValuePairElement(quest, value, type) {
+            let tr = document.createElement("tr")
+            let q = document.createElement("td")
+            q.classList.add("quest");
+            q.innerText = quest;
+            let v = document.createElement("td")
+            v.classList.add("value");
+            if(type == "file") {
+                let a = document.createElement("a")
+                a.href = "/uploads/"+value
+                a.innerText = value;
+                v.appendChild(a)
+            } else {
+                v.innerText = value
+            }
+            tr.appendChild(q)
+            tr.appendChild(v)
+            return tr;
+        }
+        function _createSingleReportTable(title, date, data) {
+            let li = document.createElement("li")
+            li.classList.add("report")
+            let titlebar = document.createElement("p")
+            let table = document.createElement("table")
+            let thead = document.createElement("thead");
+            let tbody = document.createElement("tbody");
+            thead.innerHTML = "<tr><th>Question</th><th>Value</th></tr>";
+            date = new Date(Number(date.split('.')[0]));
+            date = date.toLocaleDateString("en-US");
+            titlebar.innerHTML = "<span class='title'>"+title+"</span> <span class='date'>"+date+"</span>";
+            
+            for (const [questId, value] of Object.entries(data)) {
+                getAjax("/report/get/ReportFormQuest/"+questId, (res) => {
+                    const json = JSON.parse(res)
+                    if(json.err) return;
+                    let row = json.rows[0];
+                    getAjax("/report/get/ReportFormField/"+row.fieldId, (res) => {
+                        const field = JSON.parse(res).rows[0].field;
+                        tbody.appendChild(__createQuestValuePairElement(field, value, row.submitType));
+                    })
+                })
+                
+            }
+            li.appendChild(titlebar)
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            li.appendChild(table);
+            return li;
+        }
+
+        function loadReport20() {
+            //최근 순, 20개
+            getAjax("/report/get/reports?team="+teamId+"&limit=20&offset="+currLoaded, (res) => {
+                const json = JSON.parse(res).data;
+                json.forEach(element => {
+                    getAjax("/teams/get/"+element.team, (res) => {
+                        reportList.appendChild(_createSingleReportTable(JSON.parse(res).team.name, element.date, JSON.parse(element.data)))
+                    })
+                })
+            })
+            currLoaded += 20;
+        }
 
         function report() {
             window.location.href = "/report?teamId="+teamId;

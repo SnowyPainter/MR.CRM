@@ -16,6 +16,7 @@ function getDateFromString(str) {
     return new Date(str)
 }
 function safeChar(str) {
+    str = ""+str
     str = str.replaceAll("'", "");
     str = str.replaceAll('"', "");
     return str
@@ -30,12 +31,12 @@ function updateString(table, sets, condition) {
     return s
 }
 function insertString(table, insertOrder, values) {
-    for(let i = 0;i < values.length;i++) {
+    /* for(let i = 0;i < values.length;i++) {
         values[i] = safeChar(values[i])
-    }
+    } */
     let order = insertOrder.map((f) => f).join(',');
-    let val = values.map((v) => "'" + v + "'").join(',');
-    return "INSERT INTO " + table + " (" + order + ")" + " VALUES(" + val + ");";
+    let q = values.map((v) => "?").join(',');
+    return "INSERT INTO " + table + " (" + order + ")" + " VALUES(" + q + ");";
 }
 function selectString(table, fieldArray, condition) {
     const f = fieldArray.length == 0 ? "*" : fieldArray.map((f) => f).join(',');
@@ -56,7 +57,7 @@ function deleteRowString(table, condition) {
 function _insert(table, orderArray, valueArray) {
     const s = insertString(table, orderArray,
         valueArray);
-    db.run(s);
+    db.run(s, valueArray, (err)=>{});
 }
 
 module.exports.insert = (table, keyvalueArray) => {
