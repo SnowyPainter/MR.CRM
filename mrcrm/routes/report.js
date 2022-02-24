@@ -21,8 +21,8 @@ router.post('/submit', (req, res) => {
         for (const [questId, file] of Object.entries(req.files)) {
             if (stopSubmit == true) break;
 
-            const filename = req.rootDir + "\\" + Date.now() + "." + file.name.split(".")[1];
-            fs.writeFileSync(filename, file.data, (err) => { 
+            const filename = Date.now() + "." + file.name.split(".")[1];
+            fs.writeFileSync(req.rootDir + "\\" + filename, file.data, (err) => { 
                 if (err) stopSubmit = true; 
             })
             if (stopSubmit) {
