@@ -9,6 +9,23 @@
 <body>
   <%- include('./navbar.ejs') %>
     <div id="main">
+      <div class="container">
+        <h1 class="title">Create User</h1>
+        <form method="post" action="/user/add">
+          <table>
+            <tbody>
+              <tr><td>Email</td><td><input name="email"></td></tr>
+              <tr><td>Name</td><td><input name="name"></td></tr>
+              <tr><td>Password</td><td><input name="password"></td></tr>
+              <tr><td>Manager</td><td><select name="manager">
+                <option value="1">Manager</option>
+                <option value="0" selected>Not Manager</option>
+              </select></td></tr>
+            </tbody>
+          </table>
+          <button type="submit">Create</button>
+        </form>
+      </div>
       <% for(let i=0;i < users.length;i++) { %>
       <div class="container">
         <h1 class="title">User <%= users[i].id %></h1>

@@ -6,6 +6,19 @@ const auth = require('./auth')
 
 router.use('/', auth.authIfNotRedirectLogin);
 
+router.get('/', (req,res) => {
+    const teamId = req.query.teamId;
+
+    res.render("report", {
+        
+    })
+})
+
+router.post('/submit', (req, res) => {
+    console.log(req.body)
+    res.json({})
+})
+
 router.get('/create', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')
 

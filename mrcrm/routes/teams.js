@@ -61,7 +61,10 @@ router.get('/manage', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')
 
     res.db.getTeamUrlPairs((teams) => {
-        res.render("manageTeam", { teams: teams })
+        res.render("manageTeam", { 
+            teams: teams ,
+            data: res.data
+        })
     })
 })
 router.get('/edit/:id', (req,res) => {

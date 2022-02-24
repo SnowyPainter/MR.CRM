@@ -111,33 +111,34 @@ module.exports.initialize = () => {
         }))
         db.run(createTableString("User", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-            "manager": "INTEGER",
-            "email": "TEXT",
-            "name" : "TEXT",
-            "password": "TEXT",
-            "permission": "TEXT",
-            "team": "TEXT"
+            "manager": "INTEGER not null",
+            "email": "TEXT not null",
+            "name" : "TEXT not null",
+            "password": "TEXT not null",
+            "permission": "TEXT not null",
+            "team": "TEXT not null"
         }));
         db.run(createTableString("ReportForm", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-            "quests": "TEXT",
-            "title" : "TEXT"
+            "quests": "TEXT not null",
+            "title" : "TEXT not null"
         }))
         db.run(createTableString("ReportFormField", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-            "field": "TEXT"
+            "field": "TEXT not null"
         }))
         db.run(createTableString("ReportFormQuest", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-            "fieldId": "TEXT",
-            "submitType": "TEXT"
+            "fieldId": "TEXT not null",
+            "submitType": "TEXT not null"
         }))
         db.run(createTableString("Report", {
             "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-            "user": "INTEGER",
-            "form": "INTEGER",
-            "data": "TEXT",
-            "date": "TEXT"
+            "user": "INTEGER not null",
+            "form": "INTEGER not null",
+            "team": "TEXT not null",
+            "data": "TEXT not null",
+            "date": "TEXT not null"
         }))
     })
 }

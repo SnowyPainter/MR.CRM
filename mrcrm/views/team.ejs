@@ -11,8 +11,16 @@
     <div id="main">
         <div class="container">
             <h1>Team <%= team.name %></h1>
+            <button onclick="report()">Submit Report</button>
         </div>
     </div>
-</body>
+    <script src="/javascripts/base.js"></script>
+    <script>
+        const teamId = "<%= team.id%>"
 
+        function report() {
+            window.location.href = "/report?teamId="+teamId;
+        }
+    </script>
+</body>
 </html>

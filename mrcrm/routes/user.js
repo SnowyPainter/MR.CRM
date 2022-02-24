@@ -25,6 +25,22 @@ router.get('/manage', auth.authIfNotRedirectLogin,(req, res) => {
     }
   })
 })
+
+router.post('/add', auth.authIfNotRedirectLogin, (req, res) => {
+  if (res.data.manager != 1) { res.redirect('/'); return; }
+
+  res.db.insert("User", {
+    "email": req.body.email,
+    "name": req.body.name,
+    "password": req.body.password,
+    "manager": req.body.manager,
+    "permission":"",
+    "team":""
+  })
+  
+  res.redirect('/user')
+})
+
 router.get('/update/team/:id', auth.authIfNotRedirectLogin, (req, res) => {
   const userId = req.params.id;
   const teamId = req.query.teamId;
