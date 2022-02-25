@@ -44,11 +44,20 @@ router.post('/add', auth.authIfNotRedirectLogin, (req, res) => {
 router.get('/update/team/:id', auth.authIfNotRedirectLogin, (req, res) => {
   const userId = req.params.id;
   const teamId = req.query.teamId;
-
-  res.db.update("User", {
-    "team": teamId
-  }, "WHERE id="+userId)
-  res.json({})
+  
+  res.db.select("User", ["permission"], "WHERE id="+userId, (err, rows) => {
+    if(!err) {
+      let permission = auth.permissionUpdateOrInsert(teamId, teamId+" RW", rows[0].permission);
+      console.log(permission)
+      res.db.update("User", {
+        "team": teamId,
+        "permission": permission
+      }, "WHERE id="+userId)
+      res.json({result:true})
+    } else {
+      res.json({err:err})
+    }
+  })
 })
 router.get('/update/:id', auth.authIfNotRedirectLogin, (req, res) => {
   if (res.data.manager != 1) res.json({ err: "not manager" })

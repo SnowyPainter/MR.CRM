@@ -7,8 +7,93 @@ const { redirect } = require('express/lib/response');
 
 router.use('/', auth.authIfNotRedirectLogin);
 
+router.get('/:id', (req, res) => {
+    const teamId = req.params.id
+    new Promise((rs, rj) => {
+        res.data.permission.map((arr) => {
+            if (arr[0] == teamId)
+                rs(true)
+        })
+        rj(false)
+    }).then((result) => {
+        if (result == true) {
+            res.db.select("Team", [], "WHERE id=" + teamId, (err, row) => {
+                if (err || row == undefined) {
+                    res.redirect('/');
+                }
+                res.render('team', {
+                    team: row,
+                    data: res.data
+                });
+            })
+        } else {
+            res.redirect('/')
+        }
+    }).catch((reason) => {
+        if (reason == false) {
+            res.redirect('/')
+        }
+    })
+})
+
+router.get('/create', (req, res) => {
+    if (res.data.manager != 1) res.redirect('/')
+    res.render('createTeam', {
+        data: res.data
+    });
+})
+router.get('/create/team', (req, res) => {
+    if (res.data.manager != 1) { res.json({ err: "not manager" }); return }
+
+    const teamName = req.query.team;
+    res.db.serialize(() => {
+        res.db.insert("Team", {
+            "name": teamName
+        })
+        res.db.select("Team", ["id"], "ORDER BY id DESC LIMIT 1", (err, rows) => {
+            if (!err) res.json({ teamId: rows[0].id })
+            else res.json({ err: err })
+        })
+    })
+})
+router.get('/manage', (req, res) => {
+    if (res.data.manager != 1) { res.redirect('/'); return; }
+    
+    res.db.getTeamUrlPairs((teams) => {
+        res.render("manageTeam", { 
+            teams: teams ,
+            data: res.data
+        })
+    })
+})
+router.get('/edit/:id', (req,res) => {
+    if (res.data.manager != 1) { res.redirect('/'); return; }
+
+    const teamId = req.params.id;
+    res.db.select("Team", [], "WHERE id="+teamId, (err, rows) => {
+        if(!err) {
+            res.render("editTeam", {
+                id:rows[0].id,
+                name:rows[0].name,
+                data: res.data
+            });
+        }
+    })
+})
+router.get('/update/:teamId', (req,res) => {
+    if (res.data.manager != 1) { res.json({err:"not manager"}); return; }
+    const teamId = req.params.teamId;
+    const name = req.query.name;
+
+    res.db.update("Team", {
+        "name": name,
+    }, "WHERE id="+teamId)
+
+    res.json({})
+});
+
 router.get('/add/member/:userId', (req, res) => {
-    if (res.data.manager != 1) res.json({ err: "not manager" })
+    if (res.data.manager != 1) { res.json({ err: "not manager" }); return; }
 
     const userId = req.params.userId;
     const teamId = req.query.teamId;
@@ -38,89 +123,6 @@ router.get('/add/member/:userId', (req, res) => {
         }
     })
 })
-router.get('/create/team', (req, res) => {
-    if (res.data.manager != 1) res.json({ err: "not manager" })
-
-    const teamName = req.query.team;
-    res.db.serialize(() => {
-        res.db.insert("Team", {
-            "name": teamName
-        })
-        res.db.select("Team", ["id"], "ORDER BY id DESC LIMIT 1", (err, rows) => {
-            if (!err) res.json({ teamId: rows[0].id })
-            else res.json({ err: err })
-        })
-    })
-})
-router.get('/create', (req, res) => {
-    if (res.data.manager != 1) res.redirect('/')
-    res.render('createTeam', {
-        data: res.data
-    });
-})
-router.get('/manage', (req, res) => {
-    if (res.data.manager != 1) res.redirect('/')
-
-    res.db.getTeamUrlPairs((teams) => {
-        res.render("manageTeam", { 
-            teams: teams ,
-            data: res.data
-        })
-    })
-})
-router.get('/edit/:id', (req,res) => {
-    if (res.data.manager != 1) res.redirect('/')
-    const teamId = req.params.id;
-    res.db.select("Team", [], "WHERE id="+teamId, (err, rows) => {
-        if(!err) {
-            res.render("editTeam", {
-                id:rows[0].id,
-                name:rows[0].name,
-                data: res.data
-            });
-        }
-    })
-})
-router.get('/update/:teamId', (req,res) => {
-    if (res.data.manager != 1) { res.json({err:"not manager"}); return; }
-    const teamId = req.params.teamId;
-    const name = req.query.name;
-
-    res.db.update("Team", {
-        "name": name,
-    }, "WHERE id="+teamId)
-
-    res.json({})
-});
-router.get('/:id', (req, res) => {
-    const id = req.params.id
-    new Promise((rs, rj) => {
-        res.data.permission.map((arr) => {
-            if (arr[0] == id)
-                rs(true)
-        })
-        rj(false)
-    }).then((result) => {
-        if (result == true) {
-            res.db.select("Team", [], "WHERE id=" + id, (err, row) => {
-                if (err || row == undefined) {
-                    res.redirect('/');
-                }
-                res.render('team', {
-                    team: row,
-                    data: res.data
-                });
-            })
-        } else {
-            res.redirect('/')
-        }
-    }).catch((reason) => {
-        if (reason == false) {
-            res.redirect('/')
-        }
-    })
-})
-
 router.get('/get/list', (req, res) => {
     if (res.data != undefined) {
         res.db.getTeamUrlPairs((teams) => {
