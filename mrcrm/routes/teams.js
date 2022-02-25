@@ -17,37 +17,6 @@ router.get('/manage', (req, res) => {
         })
     })
 })
-
-//routing order. manage 뒤에 있어야함.
-router.get('/:id', (req, res) => {
-    const teamId = req.params.id
-    new Promise((rs, rj) => {
-        res.data.permission.map((arr) => {
-            if (arr[0] == teamId)
-                rs(true)
-        })
-        rj(false)
-    }).then((result) => {
-        if (result == true) {
-            res.db.select("Team", [], "WHERE id=" + teamId, (err, row) => {
-                if (err || row == undefined) {
-                    res.redirect('/');
-                }
-                res.render('team', {
-                    team: row,
-                    data: res.data
-                });
-            })
-        } else {
-            res.redirect('/')
-        }
-    }).catch((reason) => {
-        if (reason == false) {
-            res.redirect('/')
-        }
-    })
-})
-
 router.get('/create', (req, res) => {
     if (res.data.manager != 1) res.redirect('/')
     res.render('createTeam', {
@@ -66,6 +35,37 @@ router.get('/create/team', (req, res) => {
             if (!err) res.json({ teamId: rows[0].id })
             else res.json({ err: err })
         })
+    })
+})
+//routing order. 맨 끝에 있어야함.
+router.get('/:id', (req, res) => {
+    const teamId = req.params.id
+    new Promise((rs, rj) => {
+        if(teamId == res.data.team) rs(true)
+        res.data.permission.map((arr) => {
+            if (arr[0] == teamId)
+                rs(true)
+        })
+        rj(false)
+    }).then((result) => {
+        if (result == true) {
+            res.db.select("Team", [], "WHERE id=" + teamId, (err, row) => {
+                if (err || row == undefined) {
+                    res.redirect('/');
+                }
+                res.render('team', {
+                    team: row,
+                    data: res.data,
+                    readonly: auth.permissionCheck(res.data.permission, teamId, "R")
+                });
+            })
+        } else {
+            res.redirect('/')
+        }
+    }).catch((reason) => {
+        if (reason == false) {
+            res.redirect('/')
+        }
     })
 })
 router.get('/edit/:id', (req,res) => {
@@ -111,7 +111,8 @@ router.get('/add/member/:userId', (req, res) => {
                     email: row.email,
                     name: row.name,
                     manager: row.manager,
-                    permission: auth.parsePermission(permission)
+                    permission: auth.parsePermission(permission),
+                    team: row.team
                 }
                 let token = jwt.sign(user, config.secretCode);
                 res.clearCookie("auth-token")

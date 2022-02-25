@@ -1,6 +1,15 @@
 var config = require('../config/config')
 const jwt = require('jsonwebtoken');
 
+module.exports.permissionCheck = (permission, teamId, checkGrade) => {
+  let flag = false;
+  permission.forEach((p) => {
+    if(p[0] == teamId && p[1] == checkGrade)
+      flag = true;
+  })
+  return flag;
+}
+
 module.exports.permissionUpdateOrInsert = (teamId, newPermission, permission) => {
   let find = false;
   let splited = permission.split(',');

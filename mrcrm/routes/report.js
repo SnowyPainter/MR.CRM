@@ -15,6 +15,9 @@ router.get('/', (req, res) => {
 })
 
 router.post('/submit', (req, res) => {
+    if(req.body.teamId != res.data.team && !auth.permissionCheck(res.data.permission, req.body.teamId, "RW"))
+        res.json({err:"Cannot submit report. because of no permission"})
+
     let data = {};
     let stopSubmit = false;
     if (req.files)

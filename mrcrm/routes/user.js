@@ -110,7 +110,8 @@ router.post('/login', (req, res) => {
         email: row.email,
         name: row.name,
         manager: row.manager,
-        permission: auth.parsePermission(row.permission)
+        permission: auth.parsePermission(row.permission),
+        team: row.team
       }
       let token = jwt.sign(user, config.secretCode);
       res.cookie("auth-token", token); 
