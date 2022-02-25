@@ -7,6 +7,18 @@ const { redirect } = require('express/lib/response');
 
 router.use('/', auth.authIfNotRedirectLogin);
 
+router.get('/manage', (req, res) => {
+    if (res.data.manager != 1) { res.redirect('/'); return; }
+    
+    res.db.getTeamUrlPairs((teams) => {
+        res.render("manageTeam", { 
+            teams: teams ,
+            data: res.data
+        })
+    })
+})
+
+//routing order. manage 뒤에 있어야함.
 router.get('/:id', (req, res) => {
     const teamId = req.params.id
     new Promise((rs, rj) => {
@@ -53,16 +65,6 @@ router.get('/create/team', (req, res) => {
         res.db.select("Team", ["id"], "ORDER BY id DESC LIMIT 1", (err, rows) => {
             if (!err) res.json({ teamId: rows[0].id })
             else res.json({ err: err })
-        })
-    })
-})
-router.get('/manage', (req, res) => {
-    if (res.data.manager != 1) { res.redirect('/'); return; }
-    
-    res.db.getTeamUrlPairs((teams) => {
-        res.render("manageTeam", { 
-            teams: teams ,
-            data: res.data
         })
     })
 })
