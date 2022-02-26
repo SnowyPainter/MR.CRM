@@ -108,7 +108,7 @@ router.get('/get/reports', (req, res) => {
 })
 
 router.get('/get/list/:table', (req, res) => {
-    if (res.data.manager != 1) res.json({ data: [] });
+    //if (res.data.manager != 1) { res.json({ data: [] }); return; }
     res.db.select(req.params.table, [], "", (err, rows) => {
         if (!err)
             res.json({ data: rows });

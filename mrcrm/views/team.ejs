@@ -86,7 +86,6 @@
         }
 
         function loadReport20() {
-            //최근 순, 20개
             getAjax("/report/get/reports?team="+teamId+"&limit=20&offset="+currLoaded, (res) => {
                 const json = JSON.parse(res).data;
                 json.forEach(element => {
