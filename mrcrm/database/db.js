@@ -15,17 +15,10 @@ function getNowDate() {
 function getDateFromString(str) {
     return new Date(str)
 }
-function safeChar(str) {
-    str = ""+str
-    str = str.replaceAll("'", "");
-    str = str.replaceAll('"', "");
-    return str
-}
 function updateString(table, sets, condition) {
     let set = []
     for (let [column, value] of Object.entries(sets)) {
-        value = safeChar(value)
-        set.push(column + "=" + "'" + value + "'")
+        set.push(column + "=" + "?")
     }
     const s = "UPDATE " + table + " SET " + set.join(', ') + " " + condition;
     return s
@@ -76,7 +69,8 @@ module.exports.select = (table, fieldArray, condition, handler) => {
 }
 module.exports.update = (table, sets, condition) => {
     const s = updateString(table, sets, condition);
-    db.run(s)
+    
+    db.run(s, Object.keys(sets).map(key=>sets[key]))
 }
 module.exports.updateOrInsert = (table, values, condition) => {
     order = []
