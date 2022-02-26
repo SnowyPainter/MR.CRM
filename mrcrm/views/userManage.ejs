@@ -68,11 +68,34 @@
               <ul class="team-list">
 
               </ul>
+              <select class="permissionTeamSelect"></select>
+              <select class="permissionSelect"><option value="R">Read-only</option><option value="RW">Read & Write</option></select>
+              <button class="addPermissionBtn" type="button">Add Permission</button>
             </div>
             </form>
             <script>
+              document.getElementsByClassName("<%= users[i].id %>")[0].getElementsByClassName("addPermissionBtn")[0].addEventListener("click", (e) => {
+                let sender = e.target;
+                let selectedTeam = sender.parentElement.getElementsByClassName("permissionTeamSelect")[0];
+                let selectedPermission = sender.parentElement.getElementsByClassName("permissionSelect")[0].value;
+                const teamName = selectedTeam.options[selectedTeam.selectedIndex].innerText;
+                const teamId = selectedTeam.value;
+                let tplist = sender.parentElement.getElementsByClassName("team-list")[0];
+                let flag = false;
+                
+                for(let i = 0;i < tplist.getElementsByTagName("li").length;i++) {
+                  if(tplist.getElementsByTagName("li")[i].getElementsByTagName("select")[0].name == "[team]"+teamId) {
+                    alert("Already added permission.")
+                    flag = true;
+                  }
+                }
+                if(!flag)
+                  tplist.appendChild(_createPermissionRow(teamId, teamName, selectedPermission))
+              })
+
               getAjax("/teams/get/list", (res) => {
                 let select = document.getElementsByClassName("<%= users[i].id %>")[0].getElementsByClassName("teamListSelect")[0];
+                let permissionTeamSelect = document.getElementsByClassName("<%= users[i].id %>")[0].getElementsByClassName("permissionTeamSelect")[0]
                 new Promise((rs, rj) => {
                   getAjax("/user/get/team/<%= users[i].id %>", (res) => {
                     rs(JSON.parse(res))
@@ -91,6 +114,7 @@
                       opt.selected = "selected"
                       selected = true;
                     }
+                    permissionTeamSelect.appendChild(opt.cloneNode(true))
                     select.appendChild(opt);
                   })
                   if(!selected)
@@ -103,6 +127,23 @@
               else
                 document.getElementsByClassName("<%= users[i].id %>")[0].getElementsByClassName("managerOrNotSelect")[0].value = 0;
 
+              function _createPermissionRow(teamId, teamName, selectedPermission) {
+                  let li = document.createElement("li");
+                  let delBtn = document.createElement("button");
+                  delBtn.type = "button";
+                  delBtn.innerText = "X";
+                  delBtn.classList.add("floatright")
+                  li.innerHTML = teamName+" ";
+                  li.innerHTML += "<select><option value='"+teamId+" R' "+(selectedPermission == "R" ? "selected" : "")+">Read-only</option><option value='"+teamId+" RW' "+(selectedPermission == "RW" ? "selected" : "")+">Read&Write</option></select>";
+                  delBtn.addEventListener("click", () => {
+                    li.parentElement.removeChild(li);
+                  })
+                  let select = li.getElementsByTagName("select")[0];
+                  select.name = "[team]"+teamId;
+                  li.appendChild(delBtn);
+                  return li;
+              }
+
               "<%= users[i].permission%>".split(',').forEach((p) => {
                 let row = document.getElementById("<%= users[i].id%>").nextElementSibling;
                 let ul = row.getElementsByClassName("team-list")[0];
@@ -114,20 +155,11 @@
                 getAjax("/teams/get/" + teamId, (res) => {
                   const team = JSON.parse(res).team;
                   if(!team) return;
-                  let li = document.createElement("li");
-                  let delBtn = document.createElement("button");
-                  delBtn.type = "button";
-                  delBtn.innerText = "X";
-                  delBtn.classList.add("floatright")
-                  li.innerHTML = team.name+" "+"<select><option value='"+teamId+" R' "+(permission == "R" ? "selected" : "")+">Read-only</option><option value='"+teamId+" RW' "+(permission == "RW" ? "selected" : "")+">Read&Write</option></select>";
-                  delBtn.addEventListener("click", () => {
-                    li.parentElement.removeChild(li);
-                  })
-                  li.appendChild(delBtn);
+                  let li = _createPermissionRow(teamId, team.name, permission);
                   ul.appendChild(li);
 
                   let select = li.getElementsByTagName("select")[0];
-                  select.name = "[team]"+teamId;
+                  
                   for(let i = 0;i < select.options.length;i++) {
                     if(select.options[i].value == permission) {
                       select.selectedIndex = i;
