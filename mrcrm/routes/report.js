@@ -95,7 +95,7 @@ router.get('/get/reports', (req, res) => {
     const offset = req.query.offset;
     const teamId = req.query.team;
 
-    let condition = "WHERE team="+teamId+" ORDER BY date(date) DESC ";
+    let condition = "WHERE team="+teamId+" ORDER BY id DESC ";
     if (limit) condition += "LIMIT " + limit + " OFFSET " + offset;
     
     res.db.select("Report", [], condition, (err, rows) => {
