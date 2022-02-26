@@ -78,6 +78,7 @@
                     rs(JSON.parse(res))
                   })
                 }).then((json) => {
+                  let selected = false;
                   JSON.parse(res).teams.forEach((team) => {
                     let opt = document.createElement("option")
                     const id = team[1].replace('/teams/', '');
@@ -86,10 +87,15 @@
                     }
                     opt.value = id
                     opt.innerText = team[0]
+                    if(id == "<%= users[i].team%>") {
+                      opt.selected = "selected"
+                      selected = true;
+                    }
                     select.appendChild(opt);
                   })
+                  if(!selected)
+                    select.selectedIndex = select.options.length;
                 })
-                
               })
               
               if("<%= users[i].manager %>" == "1")

@@ -68,14 +68,16 @@ router.get('/update/:id', auth.authIfNotRedirectLogin, (req, res) => {
   const team = req.query.affteam;
   const ismanager = req.query.ismanager;
   let parsedPermission = [];
-  req.query.team.forEach((p) => parsedPermission.push(p))
+  if(req.query.team != undefined)
+    req.query.team.forEach((p) => parsedPermission.push(p))
   parsedPermission = parsedPermission.join(', ');
   res.db.update("User", {
     "name": name,
     "password": password,
     "email": email,
     "manager": ismanager,
-    "permission": parsedPermission
+    "permission": parsedPermission,
+    "team": team
   }, "WHERE id="+id);
 
   res.redirect('/user/manage');
