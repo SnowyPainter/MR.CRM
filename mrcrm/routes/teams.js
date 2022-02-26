@@ -53,11 +53,22 @@ router.get('/:id', (req, res) => {
                 if (err || row == undefined) {
                     res.redirect('/');
                 }
-                res.render('team', {
-                    team: row,
-                    data: res.data,
-                    readonly: auth.permissionCheck(res.data.permission, teamId, "R")
-                });
+                res.db.select("User", ["id", "name", "permission", "team"], "", (err, rows) => {
+                    if(!err) {
+                        let members = []
+                        rows.forEach(row => {
+                            if(row.team == teamId || auth.permissionCheck(auth.parsePermission(row.permission), teamId, "RW"))
+                                members.push(row);
+                        });
+                        res.render('team', {
+                            team: row,
+                            data: res.data,
+                            members:members,
+                            readonly: auth.permissionCheck(res.data.permission, teamId, "R")
+                        });
+                    }
+                    else res.json({err:err})
+                })
             })
         } else {
             res.redirect('/')

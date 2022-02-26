@@ -20,19 +20,21 @@
             
         </div>
         <% } %>
-        <div class="container overflow-y overflow-x max-height500 max-width500">
-            <h1 class="title">Reported</h1>
-            <ol id="reportList">
-            </ol>
+        <div class="container">
             <button onclick="loadReport20()">Load More</button>
         </div>
+        <% for(let i = 0;i < members.length;i++) { %>
+        <div id="<%= members[i].id %>" class="container overflow-y overflow-x max-height500 max-width500">
+            <h1 class="title">Reported by <%= members[i].name %></h1>
+            <ol class="reportList">
+            </ol>
+        </div>
+        <% } %>
     </div>
     <script src="/javascripts/base.js"></script>
     <script>
         const teamId = "<%= team.id%>"
-        const reportList = document.getElementById("reportList");
         let currLoaded = 0;
-
         function __createQuestValuePairElement(quest, value, type) {
             let tr = document.createElement("tr")
             let q = document.createElement("td")
@@ -52,7 +54,7 @@
             tr.appendChild(v)
             return tr;
         }
-        function _createSingleReportTable(title, date, data) {
+        function _createSingleReportTable(id, title, date, data) {
             let li = document.createElement("li")
             li.classList.add("report")
             let titlebar = document.createElement("p")
@@ -61,7 +63,7 @@
             let tbody = document.createElement("tbody");
             thead.innerHTML = "<tr><th>Question</th><th>Value</th></tr>";
             date = new Date(Number(date.split('.')[0]));
-            date = date.toLocaleDateString("en-US");
+            date = timeformat(date);
             titlebar.innerHTML = "<span class='title'>"+title+"</span> <span class='date'>"+date+"</span>";
             
             for (const [questId, value] of Object.entries(data)) {
@@ -88,8 +90,10 @@
             getAjax("/report/get/reports?team="+teamId+"&limit=20&offset="+currLoaded, (res) => {
                 const json = JSON.parse(res).data;
                 json.forEach(element => {
+                    console.log(element)
+                    let rl = document.getElementById(""+element.user).getElementsByClassName("reportList")[0]
                     getAjax("/teams/get/"+element.team, (res) => {
-                        reportList.appendChild(_createSingleReportTable(JSON.parse(res).team.name, element.date, JSON.parse(element.data)))
+                        rl.appendChild(_createSingleReportTable(element.id ,JSON.parse(res).team.name, element.date, JSON.parse(element.data)))
                     })
                 })
             })

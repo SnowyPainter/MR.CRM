@@ -1,6 +1,6 @@
-function getNowDate() {
-    const d = new Date();
-    return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDay()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+":"+d.getMilliseconds()
+function timeformat(d) {
+    function pad(n) { return n<10 ? "0"+n : n };
+    return d.getFullYear()+"-"+ pad(d.getMonth()+1)+"-"+ pad(d.getDate())+" "+ pad(d.getHours())+":"+ pad(d.getMinutes())+":"+ pad(d.getSeconds())
 }
 function postAjax(url, data, onload) {
     const ajax = new XMLHttpRequest();
