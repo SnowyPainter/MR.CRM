@@ -185,7 +185,7 @@ router.get('/delete/quests/:id', (req, res) => {
         if(!err) {
             for(let i = 0;i < rows.length;i++) {
                 let arr = rows[i].quests.split(' ')
-                arr.splice(arr.indexOf(""+id), 1)
+                arr = arr.splice(arr.indexOf(""+id), 1)
                 res.db.update("ReportForm", {
                     "quests": arr.join(' ')
                 })
