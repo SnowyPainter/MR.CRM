@@ -181,14 +181,14 @@ router.get('/add/fields', (req, res) => {
 router.get('/delete/quests/:id', (req, res) => {
     const id = req.params.id;
     res.db.delete("ReportFormQuest", "WHERE id=" + id);
-    res.db.select("ReportForm", ["quests"], "WHERE instr(quests, '"+id+"') > 0", (err, rows) => {
+    res.db.select("ReportForm", ["id","quests"], "WHERE quests LIKE '%"+id+"%'", (err, rows) => {
         if(!err) {
             for(let i = 0;i < rows.length;i++) {
                 let arr = rows[i].quests.split(' ')
                 arr.splice(arr.indexOf(""+id), 1)
                 res.db.update("ReportForm", {
                     "quests": arr.join(' ')
-                }, "")
+                }, "WHERE id="+rows[i].id)
             }
             res.json({result:true})
             
