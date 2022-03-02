@@ -1,3 +1,4 @@
+const { rejects } = require('assert');
 let express = require('express');
 let fs = require('fs');
 let router = express.Router();
@@ -178,23 +179,31 @@ router.get('/add/fields', (req, res) => {
     })
 })
 
+function _deleteQuest(db, questId) {
+    db.delete("ReportFormQuest", "WHERE id=" + questId);
+    return new Promise((rs, rj) => {
+        db.select("ReportForm", ["id","quests"], "WHERE quests LIKE '%"+questId+"%'", (err, rows) => {
+            if(!err) {
+                for(let i = 0;i < rows.length;i++) {
+                    let arr = rows[i].quests.split(' ')
+                    arr.splice(arr.indexOf(""+questId), 1)
+                    db.update("ReportForm", {
+                        "quests": arr.join(' ')
+                    }, "WHERE id="+rows[i].id)
+                }
+                rs(true)
+            } else {
+                rj(err)
+            }
+        })
+    })
+}
 router.get('/delete/quests/:id', (req, res) => {
     const id = req.params.id;
-    res.db.delete("ReportFormQuest", "WHERE id=" + id);
-    res.db.select("ReportForm", ["id","quests"], "WHERE quests LIKE '%"+id+"%'", (err, rows) => {
-        if(!err) {
-            for(let i = 0;i < rows.length;i++) {
-                let arr = rows[i].quests.split(' ')
-                arr.splice(arr.indexOf(""+id), 1)
-                res.db.update("ReportForm", {
-                    "quests": arr.join(' ')
-                }, "WHERE id="+rows[i].id)
-            }
-            res.json({result:true})
-            
-        } else {
-            res.json({err:err})
-        }
+    _deleteQuest(res.db, id).then((r)=>{
+        res.json({result:r})
+    }).catch((r)=> {
+        res.json({result:r})
     })
 })
 router.get('/delete/fields/:id', (req, res) => {
@@ -202,9 +211,7 @@ router.get('/delete/fields/:id', (req, res) => {
     res.db.delete("ReportFormField", "WHERE id=" + id);
     res.db.select("ReportFormQuest", [], "WHERE id=" + id, (err, rows) => {
         rows.forEach(row => {
-            if (row.fieldId == id) {
-                res.db.delete("ReportFormQuest", "WHERE id=" + row.id)
-            }
+            _deleteQuest(res.db, row.id)
         });
     })
     res.send({})
