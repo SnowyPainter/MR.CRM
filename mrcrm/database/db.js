@@ -141,13 +141,11 @@ module.exports.initialize = () => {
 module.exports.getTeamUrlPairs = (handler) => {
     this.select("Team", [], "", (err, rows) => {
         let teams = []
-        if (err) {
-            handler(teams)
-            return;
-        }
-        rows.forEach(r => {
-            teams.push([r.name, "/teams/" + r.id])
-        });
-        handler(teams)
+        
+        if(!err)
+            rows.forEach(r => {
+                teams.push([r.name, "/teams/" + r.id])
+            });
+        handler(teams, err)
     })
 }

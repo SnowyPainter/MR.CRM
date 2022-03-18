@@ -9,10 +9,20 @@ router.use('/', auth.authIfNotRedirectLogin);
 
 router.get('/manage', (req, res) => {
     if (res.data.manager != 1) { res.redirect('/'); return; }
-    
-    res.db.getTeamUrlPairs((teams) => {
-        res.render("manageTeam", { 
-            teams: teams ,
+
+    res.db.getTeamUrlPairs((teams, err) => {
+        if (err) {
+            res.render("error", {
+                message: err,
+                error: {
+                    status: 400,
+                    stack: "",
+                }
+            })
+            return;
+        }
+        res.render("manageTeam", {
+            teams: teams,
             data: res.data
         })
     })
@@ -41,66 +51,83 @@ router.get('/create/team', (req, res) => {
 router.get('/:id', (req, res) => {
     const teamId = req.params.id
     new Promise((rs, rj) => {
-        if(teamId == res.data.team) rs(true)
+        if (teamId == res.data.team) rs(true)
         res.data.permission.map((arr) => {
             if (arr[0] == teamId)
                 rs(true)
         })
         rj(false)
     }).then((result) => {
-        if (result == true) {
-            res.db.select("Team", [], "WHERE id=" + teamId, (err, row) => {
-                if (err || row == undefined) {
-                    res.redirect('/');
-                }
-                res.db.select("User", ["id", "name", "permission", "team"], "", (err, rows) => {
-                    if(!err) {
-                        let members = []
-                        rows.forEach(row => {
-                            if(row.team == teamId || auth.permissionCheck(auth.parsePermission(row.permission), teamId, "RW"))
-                                members.push(row);
-                        });
-                        res.render('team', {
-                            team: row,
-                            data: res.data,
-                            members:members,
-                            readonly: auth.permissionCheck(res.data.permission, teamId, "R")
-                        });
+        res.db.select("Team", [], "WHERE id=" + teamId, (err, row) => {
+            if (err || row == undefined) {
+                res.render("error", {
+                    message: err ? err : "There's no team like this",
+                    error: {
+                        status: 400,
+                        stack:"",
                     }
-                    else res.json({err:err})
                 })
+            }
+            res.db.select("User", ["id", "name", "permission", "team"], "", (err, rows) => {
+                if (!err) {
+                    let members = []
+                    rows.forEach(row => {
+                        if (row.team == teamId || auth.permissionCheck(auth.parsePermission(row.permission), teamId, "RW"))
+                            members.push(row);
+                    });
+                    res.render('team', {
+                        team: row,
+                        data: res.data,
+                        members: members,
+                        readonly: auth.permissionCheck(res.data.permission, teamId, "R")
+                    });
+                }
+                else {
+                    res.render("error", {
+                        message: err,
+                        error: {
+                            status: 400,
+                            stack:"",
+                        }
+                    })
+                }
             })
-        } else {
-            res.redirect('/')
-        }
+        })
+
     }).catch((reason) => {
         if (reason == false) {
-            res.redirect('/')
+            res.render("error", {
+                message: "You don't have permission of this team",
+                error: {
+                    status: 400,
+                    stack: ""
+                }
+            })
         }
     })
 })
-router.get('/edit/:id', (req,res) => {
+router.get('/edit/:id', (req, res) => {
     if (res.data.manager != 1) { res.redirect('/'); return; }
 
     const teamId = req.params.id;
-    res.db.select("Team", [], "WHERE id="+teamId, (err, rows) => {
-        if(!err) {
+    res.db.select("Team", [], "WHERE id=" + teamId, (err, rows) => {
+        if (!err) {
             res.render("editTeam", {
-                id:rows[0].id,
-                name:rows[0].name,
+                id: rows[0].id,
+                name: rows[0].name,
                 data: res.data
             });
         }
     })
 })
-router.get('/update/:teamId', (req,res) => {
-    if (res.data.manager != 1) { res.json({err:"not manager"}); return; }
+router.get('/update/:teamId', (req, res) => {
+    if (res.data.manager != 1) { res.json({ err: "not manager" }); return; }
     const teamId = req.params.teamId;
     const name = req.query.name;
 
     res.db.update("Team", {
         "name": name,
-    }, "WHERE id="+teamId)
+    }, "WHERE id=" + teamId)
 
     res.json({})
 });
@@ -116,7 +143,7 @@ router.get('/add/member/:userId', (req, res) => {
         if (!err) {
             const row = rows[0];
             let permission = auth.permissionUpdateOrInsert(teamId, newPermission, row.permission);
-            if(userId == res.data.id) {
+            if (userId == res.data.id) {
                 const user = {
                     id: row.id,
                     email: row.email,
@@ -143,17 +170,17 @@ router.get('/get/list', (req, res) => {
             res.json({ teams: teams })
         })
     } else {
-        res.json({ teams: [] })
+        res.json({ teams: [], err: "Not logined" })
     }
 })
 
 router.get('/get/:teamId', (req, res) => {
     const teamId = req.params.teamId;
-    res.db.select("Team", ["name"], "WHERE id="+teamId, (err, rows) => {
-        if(!err) {
-            res.json({team:rows[0]})
+    res.db.select("Team", ["name"], "WHERE id=" + teamId, (err, rows) => {
+        if (!err) {
+            res.json({ team: rows[0] })
         } else {
-            res.json({team:[]})
+            res.json({ team: [], err: err })
         }
     })
 })
