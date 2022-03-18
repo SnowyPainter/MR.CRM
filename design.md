@@ -78,7 +78,8 @@ id INTEGER PRIMARY KEY AUTOINCREMENT, fieldId TEXT, submitType TEXT
 필드와 제출 타입으로 이루어져 있다.
 ## 보고서 제출
 id INTEGER PRIMARY KEY AUTOINCREMENT, reporter INTEGER, reportform INTEGER, data TEXT, date TEXT 
-reportform에 맞는 올바른 data가 필요한데, 생성되는 form의 input name의 name이 quest id 이므로 중복될 일 없으며 그것의 value가 데이터다.
-```
-a=a&b=b&c=/file/a.pdf
-```
+reportform에 맞는 올바른 data가 필요한데, json 으로 저장한다.
+
+## 데이터 베이스 유기적 상호작용
+field가 지워지면 그것이 사용된 quest가 지워진다.  
+quest가 지워지면 form에 존재하는 그 quest id도 지워진다.
