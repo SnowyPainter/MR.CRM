@@ -12,7 +12,10 @@ router.get('/', auth.checkLogin, (req, res) => {
 })
 
 router.get('/manage', auth.authIfNotRedirectLogin,(req, res) => {
-  if (res.data.manager != 1) res.json({ err: "not manager" })
+  if (res.data.manager != 1) {
+     res.json({ err: "not manager" })
+     return
+  }
   
   res.db.select("User", [], "", (err, rows) => {
     if(!err) {
@@ -27,8 +30,10 @@ router.get('/manage', auth.authIfNotRedirectLogin,(req, res) => {
 })
 
 router.post('/add', auth.authIfNotRedirectLogin, (req, res) => {
-  if (res.data.manager != 1) { res.redirect('/'); return; }
-
+  if (res.data.manager != 1) {
+    res.redirect('/')
+    return
+ }
   res.db.insert("User", {
     "email": req.body.email,
     "name": req.body.name,
@@ -42,13 +47,17 @@ router.post('/add', auth.authIfNotRedirectLogin, (req, res) => {
 })
 
 router.get('/update/team/:id', auth.authIfNotRedirectLogin, (req, res) => {
+  if (res.data.manager != 1) {
+    res.json({ err: "not manager" })
+    return
+  }
+
   const userId = req.params.id;
   const teamId = req.query.teamId;
   
   res.db.select("User", ["permission"], "WHERE id="+userId, (err, rows) => {
     if(!err) {
       let permission = auth.permissionUpdateOrInsert(teamId, teamId+" RW", rows[0].permission);
-      console.log(permission)
       res.db.update("User", {
         "team": teamId,
         "permission": permission
@@ -60,7 +69,10 @@ router.get('/update/team/:id', auth.authIfNotRedirectLogin, (req, res) => {
   })
 })
 router.get('/update/:id', auth.authIfNotRedirectLogin, (req, res) => {
-  if (res.data.manager != 1) res.json({ err: "not manager" })
+  if (res.data.manager != 1) {
+    res.json({ err: "not manager" })
+    return
+ }
   const id = req.params.id;
   const name = req.query.name;
   const password = req.query.password;

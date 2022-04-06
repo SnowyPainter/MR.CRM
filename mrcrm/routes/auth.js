@@ -65,6 +65,7 @@ module.exports.checkLogin = (req, res, next) => {
     })
     next()
   } catch (e) {
-    console.log("auth.js 32 "+e)
+    console.log(e)
+    res.redirect('/')
   }
 }
